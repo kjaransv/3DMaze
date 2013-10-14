@@ -20,4 +20,9 @@ public class Point3D {
 		y += v.y;
 		z += v.z;
 	}
+	
+	@Override
+	public String toString() {
+		return x+":"+y+":"+x;
+	}
 }

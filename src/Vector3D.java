@@ -45,4 +45,9 @@ public class Vector3D {
 	public static Vector3D sum(Vector3D v1, Vector3D v2) {
 		return new Vector3D(v1.x+v2.x, v1.y+v2.y, v1.z+v2.z);
 	}
+	
+	@Override
+	public String toString() {
+		return x+":"+y+":"+x;
+	}
 }

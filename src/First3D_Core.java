@@ -82,37 +82,65 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		float deltaTime = Gdx.graphics.getDeltaTime();
 
-		//*
+		/*
 		if(Gdx.input.isKeyPressed(Input.Keys.UP)) 
 			cam.pitch(-90.0f * deltaTime);
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) 
 			cam.pitch(90.0f * deltaTime);
-		//*/
+		*/
 		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) 
 			cam.yaw(-90.0f * deltaTime);
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) 
 			cam.yaw(90.0f * deltaTime);
 		
-		if(Gdx.input.isKeyPressed(Input.Keys.W))
+		if(Gdx.input.isKeyPressed(Input.Keys.W)){
 			cam.slide(0.0f, 0.0f, -10.0f * deltaTime);
+			
+			if (cam.eye.z<0 || cam.eye.z>(FMaze[0].length-2)*5 ||
+				cam.eye.x<0 || cam.eye.x>(FMaze.length-2)*5){
+				cam.slide(0, 0, 10.0f * deltaTime);
+			}
+		}
 
-		if(Gdx.input.isKeyPressed(Input.Keys.S)) 
+		if(Gdx.input.isKeyPressed(Input.Keys.S)){
 			cam.slide(0.0f, 0.0f, 10.0f * deltaTime);
+			
+			if (cam.eye.z<0 || cam.eye.z>(FMaze[0].length-2)*5 ||
+				cam.eye.x<0 || cam.eye.x>(FMaze.length-2)*5){
+				cam.slide(0, 0, -10.0f * deltaTime);
+			}
+		}
 		
-		if(Gdx.input.isKeyPressed(Input.Keys.A)) 
+		if(Gdx.input.isKeyPressed(Input.Keys.A)){
 			cam.slide(-10.0f * deltaTime, 0.0f, 0.0f);
+			
+			if (cam.eye.z<0 || cam.eye.z>(FMaze[0].length-2)*5 ||
+				cam.eye.x<0 || cam.eye.x>(FMaze.length-2)*5){
+				cam.slide(10.0f * deltaTime, 0.0f, 0.0f);
+			}
+		}
 		
-		if(Gdx.input.isKeyPressed(Input.Keys.D)) 
+		if(Gdx.input.isKeyPressed(Input.Keys.D)){
 			cam.slide(10.0f * deltaTime, 0.0f, 0.0f);
-		//*
+			if (cam.eye.z<0 || cam.eye.z>(FMaze[0].length-2)*5 ||
+				cam.eye.x<0 || cam.eye.x>(FMaze.length-2)*5){
+				cam.slide(-10.0f * deltaTime, 0.0f, 0.0f);
+			}
+		}
+		/*
 		if(Gdx.input.isKeyPressed(Input.Keys.R)) 
 			cam.slide(0.0f, 10.0f * deltaTime, 0.0f);
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.F)) 
 			cam.slide(0.0f, -10.0f * deltaTime, 0.0f);
-		//*/
+		*/
+		
+		/*System.out.println();
+		System.out.println("n: "+cam.n);
+		System.out.println("u: "+cam.u);*/
+		//System.out.println("v: "+cam.v); // always same
 	}
 	
 	private void drawBox() {
@@ -131,9 +159,26 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	}
 	
 	private void drawFloor() {
-		for(float fx = 0.0f; fx < FMaze.length-1; fx += 1.0) {
-			for(float fz = 0.0f; fz < FMaze[0].length-1; fz += 1.0) {
+		// set material for the floor
+		float[] materialDiffuse = {0.2f, 0.3f, 0.6f, 1.0f};
+		Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
+
+		int x = (int)(cam.eye.x+2)/5;
+		int y = (int)(cam.eye.z+2)/5;
+		
+		// draw floor
+		for(int fx = 0; fx < FMaze.length-1; fx += 1) {
+			for(int fz = 0; fz < FMaze[0].length-1; fz += 1) {
 				Gdx.gl11.glPushMatrix();
+
+				if (FMaze[fx][fz].FX==x && FMaze[fx][fz].FY==y){
+					// TODO remove
+					materialDiffuse = new float[]{0.8f, 0.3f, 0.6f, 1.0f};
+				} else {
+					materialDiffuse = new float[]{0.2f, 0.3f, 0.6f, 1.0f};
+				}
+				Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
+				
 				Gdx.gl11.glTranslatef(fx*5, 1.0f, fz*5);
 				Gdx.gl11.glScalef(0.95f*5, 0.95f, 0.95f*5);
 				drawBox();
@@ -143,6 +188,11 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	}
 	
 	private void drawWalls(){
+		// set material for the walls
+		float[] materialDiffuse = {0.2f, 0.8f, 0.6f, 1.0f};
+		Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
+
+		// draw walls		
 		for (int i=0; i<FMaze.length; i++){
 			for (int j=0; j<FMaze[i].length; j++){
 				if (FMaze[i][j].WestWall()){
@@ -171,7 +221,8 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		float[] lightDiffuse = {1.0f, 1.0f, 1.0f, 1.0f};
 		Gdx.gl11.glLightfv(GL11.GL_LIGHT0, GL11.GL_DIFFUSE, lightDiffuse, 0);
 
-		float[] lightPosition = {this.wiggleValue, 10.0f, 15.0f, 1.0f};
+		//float[] lightPosition = {this.wiggleValue, 10.0f, 15.0f, 1.0f};
+		float[] lightPosition = {cam.eye.x, cam.eye.y+2, cam.eye.z, 1.0f};
 		Gdx.gl11.glLightfv(GL11.GL_LIGHT0, GL11.GL_POSITION, lightPosition, 0);
 
 		// Configure light 1
@@ -179,12 +230,9 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.gl11.glLightfv(GL11.GL_LIGHT1, GL11.GL_DIFFUSE, lightDiffuse1, 0);
 
 		float[] lightPosition1 = {-5.0f, -10.0f, -15.0f, 1.0f};
+		//float[] lightPosition1 = {cam.eye.x, cam.eye.y, cam.eye.z, 1.0f};
 		Gdx.gl11.glLightfv(GL11.GL_LIGHT1, GL11.GL_POSITION, lightPosition1, 0);
 		
-		// Set material on the cube.
-		float[] materialDiffuse = {0.2f, .3f, 0.6f, 1.0f};
-		Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
-
 		// Draw objects!
 		drawFloor();
 		drawWalls();
