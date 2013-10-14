@@ -137,6 +137,12 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 				cam.slide(-10.0f * deltaTime, 0.0f, 0.0f);
 			}
 		}
+		
+		// TODO collision
+		// old position, new position
+		// does this line intersect any wall
+		// TODO retrace or go as far as possible
+		
 		/*
 		if(Gdx.input.isKeyPressed(Input.Keys.R)) 
 			cam.slide(0.0f, 10.0f * deltaTime, 0.0f);
@@ -194,14 +200,26 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 				if (FMaze[i][j].WestWall()){
 					Gdx.gl11.glPushMatrix();
 					Gdx.gl11.glTranslatef(i*5, 6.0f, j*5-2.5f);
-					Gdx.gl11.glScalef(5.0f, 10.0f, 1.0f);
+					Gdx.gl11.glScalef(5.25f, 10.0f, 0.25f);
+					drawBox();
+					Gdx.gl11.glPopMatrix();
+				} else {
+					Gdx.gl11.glPushMatrix();
+					Gdx.gl11.glTranslatef(i*5, 1.0f, j*5-2.5f);
+					Gdx.gl11.glScalef(5.25f, 0.95f, 0.25f);
 					drawBox();
 					Gdx.gl11.glPopMatrix();
 				}
 				if (FMaze[i][j].SouthWall()){
 					Gdx.gl11.glPushMatrix();
 					Gdx.gl11.glTranslatef(i*5-2.5f, 6.0f, j*5);
-					Gdx.gl11.glScalef(1.0f, 10.0f, 5.0f);
+					Gdx.gl11.glScalef(0.25f, 10.0f, 5.25f);
+					drawBox();
+					Gdx.gl11.glPopMatrix();
+				} else {
+					Gdx.gl11.glPushMatrix();
+					Gdx.gl11.glTranslatef(i*5-2.5f, 1.0f, j*5);
+					Gdx.gl11.glScalef(0.25f, 0.95f, 5.25f);
 					drawBox();
 					Gdx.gl11.glPopMatrix();
 				}

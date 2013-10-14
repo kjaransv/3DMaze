@@ -40,6 +40,8 @@ public class Cell {
 		}
 		
 		result[5][2].FSouthWall = true;
+		result[5][2].FWestWall = true;
+		result[4][2].FWestWall = true;
 		
 		return result;
 	}
