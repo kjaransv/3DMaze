@@ -131,8 +131,8 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	}
 	
 	private void drawFloor() {
-		for(float fx = 0.0f; fx < FMaze.length; fx += 1.0) {
-			for(float fz = 0.0f; fz < FMaze[0].length; fz += 1.0) {
+		for(float fx = 0.0f; fx < FMaze.length-1; fx += 1.0) {
+			for(float fz = 0.0f; fz < FMaze[0].length-1; fz += 1.0) {
 				Gdx.gl11.glPushMatrix();
 				Gdx.gl11.glTranslatef(fx*5, 1.0f, fz*5);
 				Gdx.gl11.glScalef(0.95f*5, 0.95f, 0.95f*5);
@@ -147,15 +147,15 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 			for (int j=0; j<FMaze[i].length; j++){
 				if (FMaze[i][j].WestWall()){
 					Gdx.gl11.glPushMatrix();
-					Gdx.gl11.glTranslatef(i*5, 6.0f, j*5);
-					Gdx.gl11.glScalef(5.0f, 10.0f, 5.0f);
+					Gdx.gl11.glTranslatef(i*5, 6.0f, j*5-2.5f);
+					Gdx.gl11.glScalef(5.0f, 10.0f, 1.0f);
 					drawBox();
 					Gdx.gl11.glPopMatrix();
 				}
 				if (FMaze[i][j].SouthWall()){
 					Gdx.gl11.glPushMatrix();
-					Gdx.gl11.glTranslatef(i*5, 6.0f, j*5);
-					Gdx.gl11.glScalef(5.0f, 10.0f, 5.0f);
+					Gdx.gl11.glTranslatef(i*5-2.5f, 6.0f, j*5);
+					Gdx.gl11.glScalef(1.0f, 10.0f, 5.0f);
 					drawBox();
 					Gdx.gl11.glPopMatrix();
 				}
@@ -185,7 +185,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		float[] materialDiffuse = {0.2f, .3f, 0.6f, 1.0f};
 		Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
 
-		// Draw floor!
+		// Draw objects!
 		drawFloor();
 		drawWalls();
 	}
