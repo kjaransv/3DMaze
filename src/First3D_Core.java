@@ -253,7 +253,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		int x_start = Math.max(player.x-10, 0);
 		int y_start = Math.max(player.y-10, 0);
 		int x_end = Math.min(player.x+10, FMaze.length-1);
-		int y_end = Math.min(player.x+10, FMaze[0].length-1);
+		int y_end = Math.min(player.y+10, FMaze[0].length-1);
 		
 		drawFloor(x_start, y_start, x_end, y_end);
 		drawWalls(x_start, y_start, x_end, y_end);
