@@ -1,3 +1,4 @@
+import java.awt.Point;
 import java.nio.FloatBuffer;
 
 import com.badlogic.gdx.graphics.GL11;
@@ -10,6 +11,13 @@ import com.badlogic.gdx.InputProcessor;
 
 public class First3D_Core implements ApplicationListener, InputProcessor
 {
+	private Point GetPlayerLocation(){
+		Point result = new Point();
+		result.x = (int)(cam.eye.x+2)/5;
+		result.y = (int)(cam.eye.z+2)/5;
+		return result;
+	}
+	
 	private Cell[][] FMaze = Cell.ExampleWalls(); // TODO remove example
 	
 	Camera cam;
@@ -158,27 +166,15 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.gl11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 20, 4);
 	}
 	
-	private void drawFloor() {
+	private void drawFloor(int AStartX, int AStartY, int AEndX, int AEndY) {
 		// set material for the floor
 		float[] materialDiffuse = {0.2f, 0.3f, 0.6f, 1.0f};
 		Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
-
-		int x = (int)(cam.eye.x+2)/5;
-		int y = (int)(cam.eye.z+2)/5;
 		
 		// draw floor
-		for(int fx = 0; fx < FMaze.length-1; fx += 1) {
-			for(int fz = 0; fz < FMaze[0].length-1; fz += 1) {
-				Gdx.gl11.glPushMatrix();
-
-				if (FMaze[fx][fz].FX==x && FMaze[fx][fz].FY==y){
-					// TODO remove
-					materialDiffuse = new float[]{0.8f, 0.3f, 0.6f, 1.0f};
-				} else {
-					materialDiffuse = new float[]{0.2f, 0.3f, 0.6f, 1.0f};
-				}
-				Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
-				
+		for (int fx=AStartX; fx<AEndX; fx++){
+			for (int fz=AStartY; fz<AEndY; fz++){
+				Gdx.gl11.glPushMatrix();				
 				Gdx.gl11.glTranslatef(fx*5, 1.0f, fz*5);
 				Gdx.gl11.glScalef(0.95f*5, 0.95f, 0.95f*5);
 				drawBox();
@@ -187,14 +183,14 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		}
 	}
 	
-	private void drawWalls(){
+	private void drawWalls(int AStartX, int AStartY, int AEndX, int AEndY){
 		// set material for the walls
 		float[] materialDiffuse = {0.2f, 0.8f, 0.6f, 1.0f};
 		Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
 
 		// draw walls		
-		for (int i=0; i<FMaze.length; i++){
-			for (int j=0; j<FMaze[i].length; j++){
+		for (int i=AStartX; i<AEndX; i++){
+			for (int j=AStartY; j<AEndY; j++){
 				if (FMaze[i][j].WestWall()){
 					Gdx.gl11.glPushMatrix();
 					Gdx.gl11.glTranslatef(i*5, 6.0f, j*5-2.5f);
@@ -234,8 +230,15 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.gl11.glLightfv(GL11.GL_LIGHT1, GL11.GL_POSITION, lightPosition1, 0);
 		
 		// Draw objects!
-		drawFloor();
-		drawWalls();
+		// limit view to area around the player 20X20
+		Point player = GetPlayerLocation();
+		int x_start = Math.max(player.x-10, 0);
+		int y_start = Math.max(player.y-10, 0);
+		int x_end = Math.min(player.x+10, FMaze.length-1);
+		int y_end = Math.min(player.x+10, FMaze[0].length-1);
+		
+		drawFloor(x_start, y_start, x_end, y_end);
+		drawWalls(x_start, y_start, x_end, y_end);
 	}
 
 	@Override

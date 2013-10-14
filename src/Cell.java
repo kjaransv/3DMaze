@@ -22,7 +22,7 @@ public class Cell {
 	}
 	
 	public static Cell[][] ExampleWalls(){
-		Cell[][] result = new Cell[10][5];
+		Cell[][] result = new Cell[1000][500];
 		
 		for (int i=0; i<result.length; i++){
 			for (int j=0; j<result[i].length; j++){
@@ -38,6 +38,8 @@ public class Cell {
 				//result[i][j] = new Cell(w || (int)(Math.random()*2)==1, s || (int)(Math.random()*2)==1);
 			}
 		}
+		
+		result[5][2].FSouthWall = true;
 		
 		return result;
 	}
