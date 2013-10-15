@@ -21,6 +21,10 @@ public class Point3D {
 		z += v.z;
 	}
 	
+	public Point3D clone(){
+		return new Point3D(x, y, z);
+	}
+	
 	@Override
 	public String toString() {
 		return x+":"+y+":"+x;
