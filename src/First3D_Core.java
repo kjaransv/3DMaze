@@ -15,7 +15,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	private Camera cam;
 
 	private void Reset(){
-		FMaze = Cell.ExampleWalls(); // TODO change to randomized maze
+		FMaze = Cell.kruskalMaze();
 		
 		cam = new Camera(new Point3D(0.0f, 3.0f, 2.0f), new Point3D(2.0f, 3.0f, 3.0f), new Vector3D(0.0f, 1.0f, 0.0f));
 		cam.slide(10, 0, -10); // TODO set random location inside maze, example the initial cell of the maze or some dead end

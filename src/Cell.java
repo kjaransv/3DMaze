@@ -1,3 +1,5 @@
+import java.awt.Point;
+import java.util.*;
 
 public class Cell {
 	private boolean FWestWall;
@@ -21,28 +23,80 @@ public class Cell {
 		return FSouthWall;
 	}
 	
-	public static Cell[][] ExampleWalls(){
-		Cell[][] result = new Cell[1000][500];
+	public static Cell[][] kruskalMaze()
+	{
+		int counter = 0;
+		Cell[][] result = new Cell[20][10];
+		int[][] trees = new int[20][10];
+		
+		LinkedList<Point> walls = new LinkedList<Point>();
 		
 		for (int i=0; i<result.length; i++){
 			for (int j=0; j<result[i].length; j++){
-				boolean w = j==0 || j==result[i].length-1;
-				boolean s = i==0 || i==result.length-1;
-				//result[i][j] = new Cell(i==j, i*2==j);
-				//result[i][j] = new Cell((int)(Math.random()*2)==1, (int)(Math.random()*2)==1);
+				trees[i][j] = counter++;
 				
-				// set outer edges
-				//w = false;
-				//s = false;
-				result[i][j] = new Cell(w, s, i, j);
-				//result[i][j] = new Cell(w || (int)(Math.random()*2)==1, s || (int)(Math.random()*2)==1);
+				result[i][j] = new Cell(true,true, i, j);
+				
+				if (i>0)
+					walls.add(new Point(i,j));
+				if (j>0)
+					walls.add(new Point(i,-j));
+				
 			}
 		}
+				
 		
-		result[5][3].FSouthWall = true;
-		result[5][3].FWestWall = true;
-		result[4][3].FWestWall = true;
+		while(!walls.isEmpty())
+		{
+			int randomWall = (int)(Math.random() * walls.size());
+			
+			Point wall = walls.remove(randomWall);
+			
+			//west
+			if(wall.y > 0)
+			{
+				if(trees[wall.x][wall.y] != trees[wall.x -1][wall.y])
+				{
+					combine(trees, wall.x, wall.y, wall.x -1, wall.y);
+					result[wall.x][wall.y].FWestWall = false;
+				}
+			}
+			//south
+			else
+			{
+				if(wall.y == 0) continue;
+				if(trees[wall.x][-wall.y] != trees[wall.x][-wall.y - 1])
+				{
+					combine(trees, wall.x, -wall.y, wall.x, -wall.y - 1);
+					result[wall.x][-wall.y].FSouthWall = false;
+				}
+			}	
+		}	
 		
 		return result;
+	}
+	
+	public static void combine(int[][] tree, int x1, int y1, int x2, int y2)
+	{
+		int temp = tree[x2][y2];
+		
+		tree[x2][y2] = tree[x1][y1];
+		
+		if(x2 > 1 && tree[x2 - 1][y2] == temp)
+		{
+			combine(tree,x2,y2,x2-1,y2);
+		}
+		if(y2 < tree[0].length-2 && tree[x2][y2 + 1] == temp)
+		{
+			combine(tree,x2,y2,x2,y2+1);
+		}
+		if(x2 < tree.length - 2 && tree[x2 + 1][y2] == temp)
+		{
+			combine(tree,x2,y2,x2+1,y2);
+		}
+		if(y2 > 1 && tree[x2][y2 - 1] == temp)
+		{
+			combine(tree,x2,y2,x2,y2 - 1);
+		}
 	}
 }
