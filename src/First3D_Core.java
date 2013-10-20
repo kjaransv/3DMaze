@@ -76,7 +76,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		// TODO add wall width to check, could be a collision on cells next to the walls
 		for (int x=min_x; x<=max_x; x++){
 			for (int y=min_y; y<=max_y; y++){
-				if (FMaze[x][y].WestWall() || FMaze[x][y].SouthWall()){
+				if (FMaze[x][y].EastWall() || FMaze[x][y].SouthWall()){
 					// yes there is a wall, but is there a collision?
 					return false;
 				}
@@ -201,7 +201,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 					drawBox();
 					Gdx.gl11.glPopMatrix();
 				}
-				if (FMaze[i][j].WestWall()){
+				if (FMaze[i][j].EastWall()){
 					Gdx.gl11.glPushMatrix();
 					Gdx.gl11.glTranslatef(i*5-2.5f, 6.0f, j*5);
 					Gdx.gl11.glScalef(0.25f, 10.0f, 5.25f);

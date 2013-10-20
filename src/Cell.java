@@ -2,21 +2,21 @@ import java.awt.Point;
 import java.util.*;
 
 public class Cell {
-	private boolean FWestWall;
+	private boolean FEastWall;
 	private boolean FSouthWall;
 	
 	public int FX, FY;
 	
-	public Cell(boolean AWestWall, boolean ASouthWall, int AX, int AY){
-		FWestWall = AWestWall;
+	public Cell(boolean AEastWall, boolean ASouthWall, int AX, int AY){
+		FEastWall = AEastWall;
 		FSouthWall = ASouthWall;
 		
 		FX = AX;
 		FY = AY;
 	}
 	
-	public boolean WestWall(){
-		return FWestWall;
+	public boolean EastWall(){
+		return FEastWall;
 	}
 	
 	public boolean SouthWall(){
@@ -27,21 +27,21 @@ public class Cell {
 	{
 		int counter = 0;
 		Cell[][] result = new Cell[AWidth][AHeight];
-		int[][] trees = new int[AWidth][AHeight];
+		int[][] trees = new int[AWidth-1][AHeight-1];
 		
 		LinkedList<Point> walls = new LinkedList<Point>();
 		
 		for (int i=0; i<AWidth; i++){
 			for (int j=0; j<AHeight; j++){
-				trees[i][j] = counter++;
+				result[i][j] = new Cell(true, true, i, j);
 				
-				result[i][j] = new Cell(true,true, i, j);
-				
-				if (i>0 && i<AWidth-1) // west wall
-					walls.add(new Point(i,j));
-				if (j>0 && j<AHeight-1) // south wall
-					walls.add(new Point(i,-j));
-				
+				if (i<AWidth-1 && j<AHeight-1){
+					trees[i][j] = counter++;
+					if (i>0) // east wall
+						walls.add(new Point(i, j));
+					if (j>0) // south wall
+						walls.add(new Point(i, -j));					
+				}
 			}
 		}
 				
@@ -52,19 +52,18 @@ public class Cell {
 			
 			Point wall = walls.remove(randomWall);
 			
-			//west
-			if(wall.y > 0)
+			//east
+			if(wall.y >= 0)
 			{
-				if(trees[wall.x][wall.y] != trees[wall.x -1][wall.y])
+				if(trees[wall.x][wall.y] != trees[wall.x-1][wall.y])
 				{
-					combine(trees, wall.x, wall.y, wall.x -1, wall.y);
-					result[wall.x][wall.y].FWestWall = false;
+					combine(trees, wall.x, wall.y, wall.x-1, wall.y);
+					result[wall.x][wall.y].FEastWall = false;
 				}
 			}
 			//south
 			else
 			{
-				if(wall.y == 0) continue;
 				if(trees[wall.x][-wall.y] != trees[wall.x][-wall.y - 1])
 				{
 					combine(trees, wall.x, -wall.y, wall.x, -wall.y - 1);
@@ -82,22 +81,10 @@ public class Cell {
 		
 		tree[x2][y2] = tree[x1][y1];
 		
-		if(x2 > 1 && tree[x2 - 1][y2] == temp)
-		{
-			combine(tree,x2,y2,x2-1,y2);
-		}
-		if(y2 < tree[0].length-2 && tree[x2][y2 + 1] == temp)
-		{
-			combine(tree,x2,y2,x2,y2+1);
-		}
-		if(x2 < tree.length - 2 && tree[x2 + 1][y2] == temp)
-		{
-			combine(tree,x2,y2,x2+1,y2);
-		}
-		if(y2 > 1 && tree[x2][y2 - 1] == temp)
-		{
-			combine(tree,x2,y2,x2,y2 - 1);
-		}
+		if(x2 > 0 && tree[x2 - 1][y2] == temp) combine(tree,x2,y2,x2-1,y2);
+		if(x2 < tree.length - 1 && tree[x2 + 1][y2] == temp) combine(tree,x2,y2,x2+1,y2);
+		if(y2 > 0 && tree[x2][y2 - 1] == temp) combine(tree,x2,y2,x2,y2 - 1);
+		if(y2 < tree[0].length-1 && tree[x2][y2 + 1] == temp) combine(tree,x2,y2,x2,y2+1);
 	}
 	
 	public static Cell[][] ExampleMaze(int AWidth, int AHeight){
@@ -113,6 +100,7 @@ public class Cell {
 		}
 		
 		result[3][1].FSouthWall = true;
+		result[3][1].FEastWall = true;
 		
 		return result;
 	}
