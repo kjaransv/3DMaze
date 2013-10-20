@@ -15,10 +15,11 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	private Camera cam;
 
 	private void Reset(){
-		FMaze = Cell.kruskalMaze();
+		FMaze = Cell.kruskalMaze(10, 8);
+		//FMaze = Cell.ExampleMaze(5, 4);
 		
 		cam = new Camera(new Point3D(0.0f, 3.0f, 2.0f), new Point3D(2.0f, 3.0f, 3.0f), new Vector3D(0.0f, 1.0f, 0.0f));
-		cam.slide(10, 0, -10); // TODO set random location inside maze, example the initial cell of the maze or some dead end
+		//cam.slide(10, 0, -10); // TODO set random location inside maze, example the initial cell of the maze or some dead end
 	}
 	
 	private Point GetPointCoordinates(Point3D APoint){
@@ -33,6 +34,27 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		// are there walls in the cells of movement?
 		Point start = GetPointCoordinates(AStart);
 		Point end = GetPointCoordinates(AEnd);
+		
+		
+		// delta x or y = 0, then what??
+		// small edges??
+
+		// find constants
+		/// m = (y2-y1)/(x2-x1)
+		/// k = y1-m*x1
+		// while ?<?
+		// find line collision
+		/// yc = xc*m+k
+		
+		/// negative y speed = top line
+		/// positive y speed = bottom line
+		/// negative x speed = right line
+		/// positive x speed = left line
+		
+		// is there a wall at that location?		
+		
+		
+		
 		
 		int min_x, min_y, max_x, max_y;
 		
@@ -56,7 +78,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 			for (int y=min_y; y<=max_y; y++){
 				if (FMaze[x][y].WestWall() || FMaze[x][y].SouthWall()){
 					// yes there is a wall, but is there a collision?
-					return true;
+					return false;
 				}
 			}
 		}
@@ -147,8 +169,8 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
 		
 		// draw floor
-		for (int fx=AStartX; fx<AEndX; fx++){
-			for (int fz=AStartY; fz<AEndY; fz++){
+		for (int fx=AStartX; fx<=AEndX; fx++){
+			for (int fz=AStartY; fz<=AEndY; fz++){
 				Gdx.gl11.glPushMatrix();				
 				Gdx.gl11.glTranslatef(fx*5, 1.0f, fz*5);
 				Gdx.gl11.glScalef(0.95f*5, 0.95f, 0.95f*5);
@@ -164,9 +186,9 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
 
 		// draw walls		
-		for (int i=AStartX; i<AEndX; i++){
-			for (int j=AStartY; j<AEndY; j++){
-				if (FMaze[i][j].WestWall()){
+		for (int i=AStartX; i<=AEndX; i++){
+			for (int j=AStartY; j<=AEndY; j++){
+				if (FMaze[i][j].SouthWall()){
 					Gdx.gl11.glPushMatrix();
 					Gdx.gl11.glTranslatef(i*5, 6.0f, j*5-2.5f);
 					Gdx.gl11.glScalef(5.25f, 10.0f, 0.25f);
@@ -179,7 +201,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 					drawBox();
 					Gdx.gl11.glPopMatrix();
 				}
-				if (FMaze[i][j].SouthWall()){
+				if (FMaze[i][j].WestWall()){
 					Gdx.gl11.glPushMatrix();
 					Gdx.gl11.glTranslatef(i*5-2.5f, 6.0f, j*5);
 					Gdx.gl11.glScalef(0.25f, 10.0f, 5.25f);

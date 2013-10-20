@@ -23,23 +23,23 @@ public class Cell {
 		return FSouthWall;
 	}
 	
-	public static Cell[][] kruskalMaze()
+	public static Cell[][] kruskalMaze(int AWidth, int AHeight)
 	{
 		int counter = 0;
-		Cell[][] result = new Cell[20][10];
-		int[][] trees = new int[20][10];
+		Cell[][] result = new Cell[AWidth][AHeight];
+		int[][] trees = new int[AWidth][AHeight];
 		
 		LinkedList<Point> walls = new LinkedList<Point>();
 		
-		for (int i=0; i<result.length; i++){
-			for (int j=0; j<result[i].length; j++){
+		for (int i=0; i<AWidth; i++){
+			for (int j=0; j<AHeight; j++){
 				trees[i][j] = counter++;
 				
 				result[i][j] = new Cell(true,true, i, j);
 				
-				if (i>0)
+				if (i>0 && i<AWidth-1) // west wall
 					walls.add(new Point(i,j));
-				if (j>0)
+				if (j>0 && j<AHeight-1) // south wall
 					walls.add(new Point(i,-j));
 				
 			}
@@ -98,5 +98,22 @@ public class Cell {
 		{
 			combine(tree,x2,y2,x2,y2 - 1);
 		}
+	}
+	
+	public static Cell[][] ExampleMaze(int AWidth, int AHeight){
+		Cell[][] result = new Cell[AWidth][AHeight];
+		
+		for (int i=0; i<AWidth; i++){
+			for (int j=0; j<AHeight; j++){
+				boolean w = i == 0 || i == AWidth-1;
+				boolean s = j == 0 || j == AHeight-1;
+				
+				result[i][j] = new Cell(w, s, i, j);
+			}
+		}
+		
+		result[3][1].FSouthWall = true;
+		
+		return result;
 	}
 }
