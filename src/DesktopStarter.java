@@ -16,12 +16,12 @@ public class DesktopStarter
         // our applications
         LwjglApplicationConfiguration cfg = new LwjglApplicationConfiguration();
         // Set the screen size to same as the desktop screen size.
-        cfg.width = scrnsize.width;
-        cfg.height = scrnsize.height;
+        cfg.width = scrnsize.width/2;
+        cfg.height = scrnsize.height/2;
         cfg.useGL20 = false;
 
         // Set OpenGL to game mode (full screen.)
-        cfg.fullscreen = true;
+        cfg.fullscreen = false;
         
         // Enable vSync
         cfg.vSyncEnabled = true;

@@ -141,4 +141,9 @@ public class Cell {
 		
 		return result;
 	}
+	
+	@Override
+	public String toString() {
+		return FX+":"+FY+":"+FZ;
+	}
 }
