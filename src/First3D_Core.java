@@ -29,8 +29,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	Texture tex;
 	String textureImage = "blackbrick.png";
 	
-	private long FDisplayLevel;
-	private int FLevel = 1;
+	private int FLevel = 5;
 	private Sound[] FNextLevel;
 
 	private long asdf; // TODO find a better name
@@ -39,7 +38,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 				
 		int x = 3*FLevel;
 		int y = 2*FLevel;
-		int z = 2*FLevel;
+		int z = 1*FLevel;
 
 		asdf = System.currentTimeMillis();
 		
@@ -62,18 +61,12 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		cam.eye = new Point3D(0, 0, 0);
 		
 		FSphere = new Sphere(10, 30);
-		
-		FDisplayLevel = System.currentTimeMillis()+3000;
 	}
 	
-	private Point GetPointCoordinates(Point3D APoint){
+	private Cell GetPointCell(Point3D APoint){
 		float offset = 2.5f;
 		
-		Point result = new Point((int)(APoint.x+offset)/5, (int)(APoint.z+offset)/5);
-		
-		if (APoint.x<-offset) result.x--;
-		if (APoint.z<-offset) result.y--;
-		return result;
+		return FMaze[(int)(APoint.x+offset)/5][(int)(APoint.y+offset)/5][(int)(APoint.z+offset)/5];
 	}
 	
 	/*
@@ -394,7 +387,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		int y_start = Math.max(player.y-10, 0);
 		int x_end = Math.min(player.x+10, FMaze.length-1);
 		int y_end = Math.min(player.y+10, FMaze[0].length-1);*/
-		
+		System.out.println(GetPointCell(cam.eye));
 		//drawFloor(x_start, y_start, x_end, y_end);
 		//drawWalls(-1, -1, -1, FMaze.length, FMaze[0].length, FMaze[0][0].length);
 		drawWalls(0, 0, 0, FMaze.length, FMaze[0].length, FMaze[0][0].length);
