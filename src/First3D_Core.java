@@ -1,7 +1,6 @@
 import java.awt.Point;
 import java.nio.FloatBuffer;
 
-import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.ApplicationListener;
@@ -11,87 +10,119 @@ import com.badlogic.gdx.InputProcessor;
 
 public class First3D_Core implements ApplicationListener, InputProcessor
 {
+	private Point FGoal;
 	private Cell[][] FMaze;
 	private Camera cam;
+	private int FLevel = 0;
 
 	private void Reset(){
-		FMaze = Cell.kruskalMaze(10, 8);
-		//FMaze = Cell.ExampleMaze(5, 4);
+		System.out.println("Level "+ ++FLevel);
+		
+		int width = 5*FLevel-2;
+		int height = 4*FLevel-2;
+
+		// find random location for the player and goal each in separate areas
+		// these locations must be dead ends
+		//
+		FGoal = new Point((int)(Math.random()*width)+1, (int)(Math.random()*height)+1);
+		Point player = new Point((int)(Math.random()*width)+1, (int)(Math.random()*height)+1);
+		
+		
+		FMaze = Cell.kruskalMaze(width+3, height+3, new Point[]{FGoal, player});
+		//FMaze = Cell.ExampleMaze(10, 10);
 		
 		cam = new Camera(new Point3D(0.0f, 3.0f, 2.0f), new Point3D(2.0f, 3.0f, 3.0f), new Vector3D(0.0f, 1.0f, 0.0f));
-		//cam.slide(10, 0, -10); // TODO set random location inside maze, example the initial cell of the maze or some dead end
+		cam.eye = new Point3D(player.x*5, 4, player.y*5);
 	}
 	
 	private Point GetPointCoordinates(Point3D APoint){
-		Point result = new Point();
-		result.x = (int)(APoint.x+2)/5;
-		result.y = (int)(APoint.z+2)/5;
+		float offset = 2.5f;
+		
+		Point result = new Point((int)(APoint.x+offset)/5, (int)(APoint.z+offset)/5);
+		
+		if (APoint.x<-offset) result.x--;
+		if (APoint.z<-offset) result.y--;
 		return result;
 	}
-			
+	
 	private boolean CheckCollision(Point3D AStart, Point3D AEnd){
-		// first is there a chance of collision?
-		// are there walls in the cells of movement?
+		// TODO Also check the small edges, north/south edge of east walls and west/east edge of south walls
+		
+		// add or subtract wall width
+		Point3D tmp = AEnd.clone();
+		if (tmp.z<AStart.z) tmp.z-= 1.75f; else if (tmp.z>AStart.z) tmp.z+= 1.75f;
+		if (tmp.x<AStart.x) tmp.x-= 1.75f; else if (tmp.x>AStart.x) tmp.x+= 1.75f;		
+		
+		// calculate start and end cell
 		Point start = GetPointCoordinates(AStart);
-		Point end = GetPointCoordinates(AEnd);
+		Point end = GetPointCoordinates(tmp);
 		
+		// only allow a single cell move
 		
-		// delta x or y = 0, then what??
-		// small edges??
+		//boolean l_e = start.y>0 && (AStart.z+2.5) % 5 <= 1.75f;
+		//boolean h_e = (AStart.z+2.5) % 5 >= 3.25f;
 
-		// find constants
-		/// m = (y2-y1)/(x2-x1)
-		/// k = y1-m*x1
-		// while ?<?
-		// find line collision
-		/// yc = xc*m+k
-		
-		/// negative y speed = top line
-		/// positive y speed = bottom line
-		/// negative x speed = right line
-		/// positive x speed = left line
-		
-		// is there a wall at that location?		
-		
-		
-		
-		
-		int min_x, min_y, max_x, max_y;
-		
-		if (start.x<end.x){
-			min_x = start.x;
-			max_x = end.x;
-		} else {
-			min_x = end.x;
-			max_x = start.x;
-		}
-		if (start.y<end.y){
-			min_y = start.y;
-			max_y = end.y;
-		} else {
-			min_y = end.y;
-			max_y = start.y;
-		}
-		
-		// TODO add wall width to check, could be a collision on cells next to the walls
-		for (int x=min_x; x<=max_x; x++){
-			for (int y=min_y; y<=max_y; y++){
-				if (FMaze[x][y].EastWall() || FMaze[x][y].SouthWall()){
-					// yes there is a wall, but is there a collision?
-					return false;
-				}
+		//boolean l_s = start.x>0 && (AStart.x+2.5) % 5 <= 1.75f;
+		//boolean h_s = (AStart.x+2.5) % 5 >= 3.25f;
+
+		// x<0 EAST
+		if (end.x<start.x){
+			if (FMaze[start.x][start.y].EastWall()) {
+				AStart.x = start.x*5-0.75f;
+				tmp.x = AStart.x;
+				tmp.z = AEnd.z;
+				if (!CheckCollision(AStart, tmp)) AStart.z = tmp.z;
+				
+				return true;
 			}
+//			if (l_e && FMaze[start.x][start.y-1].EastWall()) return true;
+//			if (h_e && FMaze[start.x][start.y+1].EastWall()) return true;
+		} else if (end.x>start.x) {
+			if (FMaze[start.x+1][start.y].EastWall()){
+				AStart.x = start.x*5+0.75f;
+				tmp.x = AStart.x;
+				tmp.z = AEnd.z;
+				if (!CheckCollision(AStart, tmp)) AStart.z = tmp.z;
+				
+				return true;
+			}
+			//if (l_e && FMaze[start.x+1][start.y-1].EastWall()) return true;
+			//if (h_e && FMaze[start.x+1][start.y+1].EastWall()) return true;
+		} else {
+			//if (l_e && FMaze[start.x][start.y-1].EastWall()) result true;
+		//	if (h_e && FMaze[start.x][start.y+1].EastWall()) result true;
+		}
+		// y<0 SOUTH
+		if (end.y<start.y){
+			if (FMaze[start.x][start.y].SouthWall()){
+				AStart.z = start.y*5-0.75f;
+				tmp.x = AEnd.x;
+				tmp.z = AStart.z;
+				if (!CheckCollision(AStart, tmp)) AStart.x = tmp.x;
+				
+				return true;
+			}
+			//if (l_s && FMaze[start.x-1][start.y].SouthWall()) return true;
+			//if (h_s && FMaze[start.x+1][start.y].SouthWall()) return true;
+		} else if (end.y>start.y) {
+			if (FMaze[start.x][start.y+1].SouthWall()){
+				AStart.z = start.y*5+0.75f;
+				tmp.x = AEnd.x;
+				tmp.z = AStart.z;
+				if (!CheckCollision(AStart, tmp)) AStart.x = tmp.x;
+				
+				return true;
+			}
+			//if (l_s && FMaze[start.x-1][start.y+1].SouthWall()) return true;
+			//if (h_s && FMaze[start.x+1][start.y+1].SouthWall()) return true;
+		} else {
+			//if (l_s && FMaze[start.x-1][start.y].SouthWall()) result true;
+			//if (h_s && FMaze[start.x+1][start.y].SouthWall()) result true;
 		}
 		
 		return false;
-		
-		// TODO collision
-		// old position, new position
-		// does this line intersect any wall
-		// TODO retrace or go as far as possible
-
 	}
-	
+		
 	@Override
 	public void create() {
 		
@@ -135,7 +166,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	private void update() {
 		Point3D start = cam.eye.clone();
 		float deltaTime = Gdx.graphics.getDeltaTime();
-		InputHandler.HandleUserInput(cam, deltaTime, true); // TODO set god mode to false
+		InputHandler.HandleUserInput(cam, deltaTime, true); // TODO flight mode disable
 		
 		if (CheckCollision(start, cam.eye)){
 			// the collision check modifies the start point in the event of a collision
@@ -143,8 +174,8 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		}
 		
 		Point p = GetPointCoordinates(cam.eye);
-		if (p.x==0 || p.y==0){
-			return;
+		if (p.x==FGoal.x && p.y==FGoal.y){
+			Reset();
 		}
 	}
 	
@@ -171,11 +202,21 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		// draw floor
 		for (int fx=AStartX; fx<=AEndX; fx++){
 			for (int fz=AStartY; fz<=AEndY; fz++){
+				if (fx==FGoal.x && fz==FGoal.y){
+					materialDiffuse = new float[]{0.8f, 0.3f, 0.6f, 1.0f};
+					Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
+				}
+				
 				Gdx.gl11.glPushMatrix();				
 				Gdx.gl11.glTranslatef(fx*5, 1.0f, fz*5);
 				Gdx.gl11.glScalef(0.95f*5, 0.95f, 0.95f*5);
 				drawBox();
 				Gdx.gl11.glPopMatrix();
+				
+				if (fx==FGoal.x && fz==FGoal.y){
+					materialDiffuse = new float[]{0.2f, 0.3f, 0.6f, 1.0f};
+					Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
+				}
 			}
 		}
 	}
@@ -284,7 +325,6 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 
 	@Override
 	public boolean keyTyped(char arg0) {
-		if (arg0 == 27) Reset(); // TODO asd
 		return false;
 	}
 

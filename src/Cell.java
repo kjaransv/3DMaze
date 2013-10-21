@@ -23,7 +23,7 @@ public class Cell {
 		return FSouthWall;
 	}
 	
-	public static Cell[][] kruskalMaze(int AWidth, int AHeight)
+	public static Cell[][] kruskalMaze(int AWidth, int AHeight, Point[] ADeadEnds)
 	{
 		int counter = 0;
 		Cell[][] result = new Cell[AWidth][AHeight];
@@ -37,14 +37,27 @@ public class Cell {
 				
 				if (i<AWidth-1 && j<AHeight-1){
 					trees[i][j] = counter++;
-					if (i>0) // east wall
-						walls.add(new Point(i, j));
-					if (j>0) // south wall
-						walls.add(new Point(i, -j));					
+					
+					boolean deadend = false;
+					boolean entre = false;
+					for (int k=0; k<ADeadEnds.length; k++){
+						if (ADeadEnds[k].x == i && ADeadEnds[k].y == j){
+							deadend = true;
+							break;
+						} else if (ADeadEnds[k].x+1 == i && ADeadEnds[k].y == j){
+							entre = true;
+						}
+					}
+					
+					if (!deadend){
+						if (i>0 && !entre) // east wall
+							walls.add(new Point(i, j));
+						if (j>0) // south wall
+							walls.add(new Point(i, -j));
+					}
 				}
 			}
 		}
-				
 		
 		while(!walls.isEmpty())
 		{
@@ -99,8 +112,8 @@ public class Cell {
 			}
 		}
 		
-		result[3][1].FSouthWall = true;
-		result[3][1].FEastWall = true;
+		result[5][3].FSouthWall = true;
+		result[3][5].FEastWall = true;
 		
 		return result;
 	}
