@@ -1,8 +1,11 @@
 import java.awt.Point;
 import java.nio.FloatBuffer;
 
+import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.utils.BufferUtils;
@@ -28,9 +31,12 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	
 	private long FDisplayLevel;
 	private int FLevel = 1;
+	private Sound[] FNextLevel;
 
-	private long asdf;
+	private long asdf; // TODO find a better name
 	private void NextLevel(){
+		if (FLevel>1) FNextLevel[(int)(Math.random()*FNextLevel.length)].play();
+		
 		asdf = System.currentTimeMillis();
 		
 		System.out.println("Level "+ FLevel++);
@@ -47,7 +53,6 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		while (player.distance(FGoal)<2){
 			player = new Point((int)(Math.random()*width)+1, (int)(Math.random()*height)+1);
 		}
-		
 		
 		FMaze = Cell.kruskalMaze(width+3, height+3, new Point[]{FGoal, player});
 		//FMaze = Cell.ExampleMaze(10, 10);
@@ -84,26 +89,28 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		// only allow a single cell move
 		
-		//boolean l_e = start.y>0 && (AStart.z+2.5) % 5 <= 1.75f;
-		//boolean h_e = (AStart.z+2.5) % 5 >= 3.25f;
+		boolean l_e = start.y>0 && (AStart.z+2.5) % 5 < 1.75f;
+		boolean h_e = (AStart.z+2.5) % 5 > 3.25f;
 
-		//boolean l_s = start.x>0 && (AStart.x+2.5) % 5 <= 1.75f;
-		//boolean h_s = (AStart.x+2.5) % 5 >= 3.25f;
+		boolean l_s = start.x>0 && (AStart.x+2.5) % 5 < 1.75f;
+		boolean h_s = (AStart.x+2.5) % 5 > 3.25f;
 
 		// x<0 EAST
 		if (end.x<start.x){
-			if (FMaze[start.x][start.y].EastWall()) {
+			if ((FMaze[start.x][start.y].EastWall()) ||
+				(l_e && FMaze[start.x-1][start.y  ].SouthWall()) ||
+			    (h_e && FMaze[start.x-1][start.y+1].SouthWall())){
 				AStart.x = start.x*5-0.75f;
 				tmp.x = AStart.x;
 				tmp.z = AEnd.z;
-				if (!CheckCollision(AStart, tmp)) AStart.z = tmp.z;
+				if (!CheckCollision(AStart, tmp)) AStart.z = tmp.z;				
 				
 				return true;
 			}
-//			if (l_e && FMaze[start.x][start.y-1].EastWall()) return true;
-//			if (h_e && FMaze[start.x][start.y+1].EastWall()) return true;
 		} else if (end.x>start.x) {
-			if (FMaze[start.x+1][start.y].EastWall()){
+			if ((FMaze[start.x+1][start.y].EastWall()) ||
+				(l_e && FMaze[start.x+1][start.y  ].SouthWall()) ||
+			    (h_e && FMaze[start.x+1][start.y+1].SouthWall())){
 				AStart.x = start.x*5+0.75f;
 				tmp.x = AStart.x;
 				tmp.z = AEnd.z;
@@ -111,15 +118,12 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 				
 				return true;
 			}
-			//if (l_e && FMaze[start.x+1][start.y-1].EastWall()) return true;
-			//if (h_e && FMaze[start.x+1][start.y+1].EastWall()) return true;
-		} else {
-			//if (l_e && FMaze[start.x][start.y-1].EastWall()) result true;
-		//	if (h_e && FMaze[start.x][start.y+1].EastWall()) result true;
 		}
 		// y<0 SOUTH
 		if (end.y<start.y){
-			if (FMaze[start.x][start.y].SouthWall()){
+			if ((FMaze[start.x][start.y].SouthWall()) ||
+				(l_s && FMaze[start.x  ][start.y-1].EastWall()) ||
+			    (h_s && FMaze[start.x+1][start.y-1].EastWall())){
 				AStart.z = start.y*5-0.75f;
 				tmp.x = AEnd.x;
 				tmp.z = AStart.z;
@@ -127,10 +131,10 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 				
 				return true;
 			}
-			//if (l_s && FMaze[start.x-1][start.y].SouthWall()) return true;
-			//if (h_s && FMaze[start.x+1][start.y].SouthWall()) return true;
 		} else if (end.y>start.y) {
-			if (FMaze[start.x][start.y+1].SouthWall()){
+			if ((FMaze[start.x][start.y+1].SouthWall()) ||
+				(l_s && FMaze[start.x  ][start.y+1].EastWall()) ||
+				(h_s && FMaze[start.x+1][start.y+1].EastWall())){
 				AStart.z = start.y*5+0.75f;
 				tmp.x = AEnd.x;
 				tmp.z = AStart.z;
@@ -150,6 +154,11 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 	@Override
 	public void create() {
+		FNextLevel = new Sound[]{
+				Gdx.audio.newSound(new FileHandle("lvl1.mp3")),
+				Gdx.audio.newSound(new FileHandle("lvl2.mp3")),
+				Gdx.audio.newSound(new FileHandle("lvl3.mp3"))
+		};
 		
 		Gdx.input.setInputProcessor(this);
 		
