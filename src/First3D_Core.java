@@ -298,7 +298,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	
 	private void drawWalls(int AStartX, int AStartY, int AEndX, int AEndY){
 		// set material for the walls
-		float[] materialDiffuse = {0.2f, 0.1f, 0.6f, 1.0f};
+		float[] materialDiffuse = {0.6f, 0.6f, 0.6f, 1.0f};
 		Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
 
 		// draw walls		
