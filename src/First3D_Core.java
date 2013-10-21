@@ -6,6 +6,7 @@ import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
+import com.badlogic.gdx.graphics.Texture;
 
 
 public class First3D_Core implements ApplicationListener, InputProcessor
@@ -14,6 +15,12 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	private Cell[][] FMaze;
 	private Camera cam;
 	private int FLevel = 0;
+	private FloatBuffer vertexBuffer;
+	
+	//texture stuff
+	FloatBuffer texCoordBuffer;
+	Texture tex;
+	String textureImage = "blackbrick.png";
 
 	private void Reset(){
 		System.out.println("Level "+ ++FLevel);
@@ -143,7 +150,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 
 		Gdx.gl11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
-		FloatBuffer vertexBuffer = BufferUtils.newFloatBuffer(72);
+		vertexBuffer = BufferUtils.newFloatBuffer(72);
 		vertexBuffer.put(new float[] {-0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
 									  0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f,
 									  0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f,
@@ -157,6 +164,25 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 									  -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,
 									  0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f});
 		vertexBuffer.rewind();
+		
+		//texture start ******************
+		
+		texCoordBuffer = BufferUtils.newFloatBuffer(48);
+		
+		texCoordBuffer.put(new float[] {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+										0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+										0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+										0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+										0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
+										0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f});
+								
+
+		texCoordBuffer.rewind();
+
+		
+		tex = new Texture(Gdx.files.internal("assets/textures/" + textureImage));
+
+		//texture end ******************
 
 		Gdx.gl11.glVertexPointer(3, GL11.GL_FLOAT, 0, vertexBuffer);
 		
@@ -180,6 +206,18 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	}
 	
 	private void drawBox() {
+		Gdx.gl11.glShadeModel(GL11.GL_SMOOTH);
+		Gdx.gl11.glVertexPointer(3, GL11.GL_FLOAT, 0, vertexBuffer);
+		
+		Gdx.gl11.glEnable(GL11.GL_TEXTURE_2D);
+		Gdx.gl11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+		
+		tex.bind();  //Gdx.gl11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
+		
+		
+		Gdx.gl11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, texCoordBuffer);
+
+		
 		Gdx.gl11.glNormal3f(0.0f, 0.0f, -1.0f);
 		Gdx.gl11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, 4);
 		Gdx.gl11.glNormal3f(1.0f, 0.0f, 0.0f);
@@ -192,6 +230,9 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.gl11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 16, 4);
 		Gdx.gl11.glNormal3f(0.0f, -1.0f, 0.0f);
 		Gdx.gl11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 20, 4);
+
+		Gdx.gl11.glDisable(GL11.GL_TEXTURE_2D);
+		Gdx.gl11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 	}
 	
 	private void drawFloor(int AStartX, int AStartY, int AEndX, int AEndY) {
