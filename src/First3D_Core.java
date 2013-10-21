@@ -2,37 +2,51 @@ import java.awt.Point;
 import java.nio.FloatBuffer;
 
 import com.badlogic.gdx.graphics.GL11;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 
-
 public class First3D_Core implements ApplicationListener, InputProcessor
 {
+	private FloatBuffer FVertexBuffer;
+	private float FDeltaTime;
+	
 	private Point FGoal;
+	private Sphere FSphere;
 	private Cell[][] FMaze;
 	private Camera cam;
-	private int FLevel = 0;
-	private FloatBuffer vertexBuffer;
 	
 	//texture stuff
 	FloatBuffer texCoordBuffer;
 	Texture tex;
 	String textureImage = "blackbrick.png";
+	
+	private long FDisplayLevel;
+	private int FLevel = 1;
 
-	private void Reset(){
-		System.out.println("Level "+ ++FLevel);
+	private long asdf;
+	private void NextLevel(){
+		asdf = System.currentTimeMillis();
+		
+		System.out.println("Level "+ FLevel++);
 		
 		int width = 5*FLevel-2;
 		int height = 4*FLevel-2;
 
-		// find random location for the player and goal each in separate areas
+		// find random location for the player and goal
 		// these locations must be dead ends
 		//
 		FGoal = new Point((int)(Math.random()*width)+1, (int)(Math.random()*height)+1);
+		
 		Point player = new Point((int)(Math.random()*width)+1, (int)(Math.random()*height)+1);
+		while (player.distance(FGoal)<2){
+			player = new Point((int)(Math.random()*width)+1, (int)(Math.random()*height)+1);
+		}
 		
 		
 		FMaze = Cell.kruskalMaze(width+3, height+3, new Point[]{FGoal, player});
@@ -40,6 +54,10 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		cam = new Camera(new Point3D(0.0f, 3.0f, 2.0f), new Point3D(2.0f, 3.0f, 3.0f), new Vector3D(0.0f, 1.0f, 0.0f));
 		cam.eye = new Point3D(player.x*5, 4, player.y*5);
+		
+		FSphere = new Sphere(10, 30);
+		
+		FDisplayLevel = System.currentTimeMillis()+3000;
 	}
 	
 	private Point GetPointCoordinates(Point3D APoint){
@@ -150,8 +168,8 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 
 		Gdx.gl11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
 
-		vertexBuffer = BufferUtils.newFloatBuffer(72);
-		vertexBuffer.put(new float[] {-0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
+		FVertexBuffer = BufferUtils.newFloatBuffer(72);
+		FVertexBuffer.put(new float[] {-0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
 									  0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f,
 									  0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f,
 									  0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f,
@@ -163,7 +181,8 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 									  0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f,
 									  -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,
 									  0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f});
-		vertexBuffer.rewind();
+
+		FVertexBuffer.rewind();
 		
 		//texture start ******************
 		
@@ -183,31 +202,29 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		tex = new Texture(Gdx.files.internal("assets/textures/" + textureImage));
 
 		//texture end ******************
-
-		Gdx.gl11.glVertexPointer(3, GL11.GL_FLOAT, 0, vertexBuffer);
 		
-		Reset();
+		NextLevel();
 	}
 	
 	private void update() {
 		Point3D start = cam.eye.clone();
-		float deltaTime = Gdx.graphics.getDeltaTime();
-		InputHandler.HandleUserInput(cam, deltaTime, true); // TODO flight mode disable
+		FDeltaTime = Gdx.graphics.getDeltaTime();
+		InputHandler.HandleUserInput(cam, FDeltaTime, false);
 		
 		if (CheckCollision(start, cam.eye)){
 			// the collision check modifies the start point in the event of a collision
-			cam.eye = start;
+			cam.eye = start; //TODO 
 		}
 		
 		Point p = GetPointCoordinates(cam.eye);
 		if (p.x==FGoal.x && p.y==FGoal.y){
-			Reset();
+			NextLevel();
 		}
 	}
 	
 	private void drawBox() {
 		Gdx.gl11.glShadeModel(GL11.GL_SMOOTH);
-		Gdx.gl11.glVertexPointer(3, GL11.GL_FLOAT, 0, vertexBuffer);
+		Gdx.gl11.glVertexPointer(3, GL11.GL_FLOAT, 0, FVertexBuffer);
 		
 		Gdx.gl11.glEnable(GL11.GL_TEXTURE_2D);
 		Gdx.gl11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
@@ -243,13 +260,30 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		// draw floor
 		for (int fx=AStartX; fx<=AEndX; fx++){
 			for (int fz=AStartY; fz<=AEndY; fz++){
+				Gdx.gl11.glPushMatrix();				
+				Gdx.gl11.glTranslatef(fx*5, 1.0f, fz*5);
+
 				if (fx==FGoal.x && fz==FGoal.y){
 					materialDiffuse = new float[]{0.8f, 0.3f, 0.6f, 1.0f};
 					Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
+
+			        Gdx.gl11.glPushMatrix();
+			        Gdx.gl11.glTranslatef(0, 3.5f, 0);
+			        long tmp = asdf-System.currentTimeMillis();
+			        float xxx = (tmp % 1000)*0.001f;
+			        
+			        Gdx.gl11.glScalef(xxx, xxx, xxx);
+			        FSphere.draw();
+			        FSphere.toggleDrawLines();
+
+			        Gdx.gl11.glScalef(1.5f, 1.5f, 1.5f);
+			        Gdx.gl11.glRotatef(0.05f * tmp, 1, 1, 1);
+			        FSphere.draw();
+
+			        FSphere.toggleDrawLines();
+			        Gdx.gl11.glPopMatrix();
 				}
 				
-				Gdx.gl11.glPushMatrix();				
-				Gdx.gl11.glTranslatef(fx*5, 1.0f, fz*5);
 				Gdx.gl11.glScalef(0.95f*5, 0.95f, 0.95f*5);
 				drawBox();
 				Gdx.gl11.glPopMatrix();
@@ -300,6 +334,22 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		}
 	}
 	
+	private void DrawLevel(){
+		// draw level text
+		if (FDisplayLevel>System.currentTimeMillis()){
+		    SpriteBatch FSpriteBatch = new SpriteBatch();
+		    BitmapFont FFont = new BitmapFont();
+
+	        FSpriteBatch.begin();
+	      
+    		String text = "LEVEL "+(FLevel-1);
+    		TextBounds bounds = FFont.getBounds(text);
+    		FFont.draw(FSpriteBatch, text, (Gdx.graphics.getWidth()-bounds.width)/2, Gdx.graphics.getHeight()/2);
+    		
+	    	FSpriteBatch.end();
+		}
+	}
+	
 	private void display() {
 		Gdx.gl11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		cam.setModelViewMatrix();
@@ -330,6 +380,8 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		drawFloor(x_start, y_start, x_end, y_end);
 		drawWalls(x_start, y_start, x_end, y_end);
+		
+		//DrawLevel(); // TODO fucks the Maze graphics
 	}
 
 	@Override
@@ -366,6 +418,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 
 	@Override
 	public boolean keyTyped(char arg0) {
+		if (arg0==27) Gdx.app.exit();
 		return false;
 	}
 
