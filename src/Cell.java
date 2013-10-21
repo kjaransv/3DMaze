@@ -2,59 +2,78 @@ import java.awt.Point;
 import java.util.*;
 
 public class Cell {
-	private boolean FEastWall;
-	private boolean FSouthWall;
+	private boolean FWall_X, FWall_Y, FWall_Z;	
+	public int FX, FY, FZ;
 	
-	public int FX, FY;
-	
-	public Cell(boolean AEastWall, boolean ASouthWall, int AX, int AY){
-		FEastWall = AEastWall;
-		FSouthWall = ASouthWall;
+	public Cell(int AX, int AY, int AZ){
+		FWall_X = true;
+		FWall_Y = true;
+		FWall_Z = true;
 		
 		FX = AX;
 		FY = AY;
+		FZ = AZ;
 	}
 	
-	public boolean EastWall(){
-		return FEastWall;
+	public boolean Wall_X(){
+		return FWall_X;
 	}
 	
-	public boolean SouthWall(){
-		return FSouthWall;
+	public boolean Wall_Y(){
+		return FWall_Y;
 	}
 	
-	public static Cell[][] kruskalMaze(int AWidth, int AHeight, Point[] ADeadEnds)
+	public boolean Wall_Z(){
+		return FWall_Z;
+	}
+	
+	private static void ReZone(int[][][] AZone, int AOld, int ANew, int x, int y, int z){
+		// boundaries
+		if (
+				x>=0 && x<AZone.length && 
+				y>=0 && y<AZone[0].length && 
+				z>=0 && z<AZone[0][0].length){
+			// zone
+			if (AZone[x][y][z] == AOld){
+				AZone[x][y][z] = ANew;
+				
+				ReZone(AZone, AOld, ANew, x+1, y, z);
+				ReZone(AZone, AOld, ANew, x-1, y, z);
+				ReZone(AZone, AOld, ANew, x, y+1, z);
+				ReZone(AZone, AOld, ANew, x, y-1, z);
+				ReZone(AZone, AOld, ANew, x, y, z+1);
+				ReZone(AZone, AOld, ANew, x, y, z-1);
+			}
+		}
+	}
+	
+	public static boolean combine(int[][][] AZone, Cell A1, Cell A2){
+		boolean result = AZone[A1.FX][A1.FY][A1.FZ] != AZone[A2.FX][A2.FY][A2.FZ];
+		
+		if (result){
+			ReZone(AZone, AZone[A2.FX][A2.FY][A2.FZ], AZone[A1.FX][A1.FY][A1.FZ], A2.FX, A2.FY, A2.FZ);
+		}
+		
+		return result;
+	}
+	
+	public static Cell[][][] kruskalMaze3D(int AX, int AY, int AZ)
 	{
 		int counter = 0;
-		Cell[][] result = new Cell[AWidth][AHeight];
-		int[][] trees = new int[AWidth-1][AHeight-1];
+		Cell[][][] result = new Cell[AX][AY][AZ];
+		int[][][] trees = new int[AX][AY][AZ];
 		
-		LinkedList<Point> walls = new LinkedList<Point>();
+		LinkedList<Wall3D> walls = new LinkedList<Wall3D>();
 		
-		for (int i=0; i<AWidth; i++){
-			for (int j=0; j<AHeight; j++){
-				result[i][j] = new Cell(true, true, i, j);
-				
-				if (i<AWidth-1 && j<AHeight-1){
-					trees[i][j] = counter++;
+		for (int x=0; x<AX; x++){
+			for (int y=0; y<AY; y++){
+				for (int z=0; z<AZ; z++){
+					result[x][y][z] = new Cell(x, y, z);
+					trees[x][y][z] = counter++;
 					
-					boolean deadend = false;
-					boolean entre = false;
-					for (int k=0; k<ADeadEnds.length; k++){
-						if (ADeadEnds[k].x == i && ADeadEnds[k].y == j){
-							deadend = true;
-							break;
-						} else if (ADeadEnds[k].x+1 == i && ADeadEnds[k].y == j){
-							entre = true;
-						}
-					}
-					
-					if (!deadend){
-						if (i>0 && !entre) // east wall
-							walls.add(new Point(i, j));
-						if (j>0) // south wall
-							walls.add(new Point(i, -j));
-					}
+					if (x<AX-1) walls.add(new Wall3D(x, y, z, 0));
+					if (y<AY-1) walls.add(new Wall3D(x, y, z, 1));
+					if (z<AZ-1) walls.add(new Wall3D(x, y, z, 2));
 				}
 			}
 		}
@@ -63,31 +82,34 @@ public class Cell {
 		{
 			int randomWall = (int)(Math.random() * walls.size());
 			
-			Point wall = walls.remove(randomWall);
+			Wall3D wall = walls.remove(randomWall);
 			
-			//east
-			if(wall.y >= 0)
-			{
-				if(trees[wall.x][wall.y] != trees[wall.x-1][wall.y])
-				{
-					combine(trees, wall.x, wall.y, wall.x-1, wall.y);
-					result[wall.x][wall.y].FEastWall = false;
+			Cell source = result[wall.x][wall.y][wall.z];			
+			switch (wall.direction){
+				case 0:{// x
+					if (combine(trees, source, result[wall.x+1][wall.y][wall.z])){
+						source.FWall_X = false;
+					}
+					break;
 				}
-			}
-			//south
-			else
-			{
-				if(trees[wall.x][-wall.y] != trees[wall.x][-wall.y - 1])
-				{
-					combine(trees, wall.x, -wall.y, wall.x, -wall.y - 1);
-					result[wall.x][-wall.y].FSouthWall = false;
+				case 1:{// y
+					if (combine(trees, source, result[wall.x][wall.y+1][wall.z])){
+						source.FWall_Y = false;
+					}
+					break;
+				}
+				case 2:{// z
+					if (combine(trees, source, result[wall.x][wall.y][wall.z+1])){
+						source.FWall_Z = false;
+					}
+					break;
 				}
 			}	
 		}	
 		
 		return result;
 	}
-	
+		
 	public static void combine(int[][] tree, int x1, int y1, int x2, int y2)
 	{
 		int temp = tree[x2][y2];
@@ -100,20 +122,22 @@ public class Cell {
 		if(y2 < tree[0].length-1 && tree[x2][y2 + 1] == temp) combine(tree,x2,y2,x2,y2+1);
 	}
 	
-	public static Cell[][] ExampleMaze(int AWidth, int AHeight){
-		Cell[][] result = new Cell[AWidth][AHeight];
+	public static Cell[][][] ExampleMaze(int AX, int AY, int AZ){
+		Cell[][][] result = new Cell[AX][AY][AZ];
 		
-		for (int i=0; i<AWidth; i++){
-			for (int j=0; j<AHeight; j++){
-				boolean w = i == 0 || i == AWidth-1;
-				boolean s = j == 0 || j == AHeight-1;
-				
-				result[i][j] = new Cell(w, s, i, j);
+		for (int x=0; x<AX; x++){
+			for (int y=0; y<AY; y++){
+				for (int z=0; z<AZ; z++){				
+					result[x][y][z] = new Cell(x, y, z);
+					result[x][y][z].FWall_X = x==0;
+					result[x][y][z].FWall_Y = y==0;
+					result[x][y][z].FWall_Z = z==0;
+				}
 			}
 		}
 		
-		result[5][3].FSouthWall = true;
-		result[3][5].FEastWall = true;
+		/*result[5][3].FSouthWall = true;
+		result[3][5].FEastWall = true;*/
 		
 		return result;
 	}
