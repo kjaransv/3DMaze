@@ -19,7 +19,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	private FloatBuffer FVertexBuffer;
 	private float FDeltaTime;
 	
-	private Point FGoal;
+	private Cell FGoal;
 	private Sphere FSphere;
 	private Cell[][][] FMaze;
 	private Camera cam;
@@ -29,18 +29,15 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	Texture tex;
 	String textureImage = "blackbrick.png";
 	
-	private int FLevel = 5;
+	private int FLevel = 1;
 	private Sound[] FNextLevel;
 
-	private long asdf; // TODO find a better name
 	private void NextLevel(){
 		if (FLevel>1) FNextLevel[(int)(Math.random()*FNextLevel.length)].play();
 				
-		int x = 3*FLevel;
+		int x = 2*FLevel;
 		int y = 2*FLevel;
-		int z = 1*FLevel;
-
-		asdf = System.currentTimeMillis();
+		int z = 2*FLevel;
 		
 		System.out.println("Level "+ FLevel++);
 
@@ -54,11 +51,13 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 			player = new Point((int)(Math.random()*width)+1, (int)(Math.random()*height)+1);
 		}*/
 		
+		
 		FMaze = Cell.kruskalMaze3D(x, y, z);
 		//FMaze = Cell.ExampleMaze(x, y, z);
+
+		FGoal = FMaze[(int)(Math.random()*x)][(int)(Math.random()*y)][(int)(Math.random()*z)];
 		
-		cam = new Camera(new Point3D(0.0f, 3.0f, 2.0f), new Point3D(2.0f, 3.0f, 3.0f), new Vector3D(0.0f, 1.0f, 0.0f));
-		cam.eye = new Point3D(0, 0, 0);
+		cam = new Camera(new Point3D(0.0f, 0.0f, 0.0f), new Point3D(2.0f, .0f, 1.0f), new Vector3D(0.0f, 1.0f, 0.0f));
 		
 		FSphere = new Sphere(10, 30);
 	}
@@ -66,21 +65,23 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	private Cell GetPointCell(Point3D APoint){
 		float offset = 2.5f;
 		
-		return FMaze[(int)(APoint.x+offset)/5][(int)(APoint.y+offset)/5][(int)(APoint.z+offset)/5];
+		return FMaze[(int)(-APoint.x+offset)/5][(int)(APoint.y+offset)/5][(int)(APoint.z+offset)/5];
 	}
 	
-	/*
 	private boolean CheckCollision(Point3D AStart, Point3D AEnd){
+		/*
+		
 		// TODO Also check the small edges, north/south edge of east walls and west/east edge of south walls
 		
 		// add or subtract wall width
 		Point3D tmp = AEnd.clone();
-		if (tmp.z<AStart.z) tmp.z-= 1.75f; else if (tmp.z>AStart.z) tmp.z+= 1.75f;
 		if (tmp.x<AStart.x) tmp.x-= 1.75f; else if (tmp.x>AStart.x) tmp.x+= 1.75f;		
+		if (tmp.y<AStart.y) tmp.y-= 1.75f; else if (tmp.y>AStart.x) tmp.y+= 1.75f;		
+		if (tmp.z<AStart.z) tmp.z-= 1.75f; else if (tmp.z>AStart.z) tmp.z+= 1.75f;
 		
 		// calculate start and end cell
-		Point start = GetPointCoordinates(AStart);
-		Point end = GetPointCoordinates(tmp);
+		Cell start = GetPointCell(AStart);
+		Cell end = GetPointCell(tmp);
 		
 		// only allow a single cell move
 		
@@ -143,9 +144,9 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 			//if (l_s && FMaze[start.x-1][start.y].SouthWall()) result true;
 			//if (h_s && FMaze[start.x+1][start.y].SouthWall()) result true;
 		}
-		
+		*/
 		return false;
-	}*/
+	}
 		
 	@Override
 	public void create() {
@@ -211,8 +212,11 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	}
 	
 	private void update() {
-		Point3D start = cam.eye.clone();
 		FDeltaTime = Gdx.graphics.getDeltaTime();
+		
+		Point3D start = cam.eye.clone();
+		Cell from = GetPointCell(start);
+		
 		InputHandler.HandleUserInput(cam, FDeltaTime, true);
 		
 		/*if (CheckCollision(start, cam.eye)){
@@ -220,13 +224,19 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 			cam.eye = start; //TODO 
 		}*/
 		
-		/*Point p = GetPointCoordinates(cam.eye);
-		if (p.x==FGoal.x && p.y==FGoal.y){
+		Cell to = GetPointCell(cam.eye);
+		if (to == FGoal){
 			NextLevel();
-		}*/
+		} else if (to != from && to.EatMe(FMaze)){
+			to.FVisited = true;
+		}
 	}
 	
-	private void drawBox() {
+	private void drawBox(float ATX, float ATY, float ATZ, float ASX, float ASY, float ASZ) {
+		Gdx.gl11.glPushMatrix();
+		Gdx.gl11.glTranslatef(ATX, ATY, ATZ);
+		Gdx.gl11.glScalef(ASX, ASY, ASZ);
+
 		Gdx.gl11.glShadeModel(GL11.GL_SMOOTH);
 		Gdx.gl11.glVertexPointer(3, GL11.GL_FLOAT, 0, FVertexBuffer);
 		
@@ -234,10 +244,8 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.gl11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
 		
 		tex.bind();  //Gdx.gl11.glBindTexture(GL11.GL_TEXTURE_2D, textureID);
-		
-		
+				
 		Gdx.gl11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, texCoordBuffer);
-
 		
 		Gdx.gl11.glNormal3f(0.0f, 0.0f, -1.0f);
 		Gdx.gl11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, 0, 4);
@@ -254,52 +262,10 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 
 		Gdx.gl11.glDisable(GL11.GL_TEXTURE_2D);
 		Gdx.gl11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
+
+		Gdx.gl11.glPopMatrix();
 	}
-	/*
-	private void drawFloor(int AStartX, int AStartY, int AEndX, int AEndY) {
-		// set material for the floor
-		float[] materialDiffuse = {0.2f, 0.3f, 0.6f, 1.0f};
-		Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
-		
-		// draw floor
-		for (int fx=AStartX; fx<=AEndX; fx++){
-			for (int fz=AStartY; fz<=AEndY; fz++){
-				Gdx.gl11.glPushMatrix();				
-				Gdx.gl11.glTranslatef(fx*5, 1.0f, fz*5);
-
-				if (fx==FGoal.x && fz==FGoal.y){
-					materialDiffuse = new float[]{0.8f, 0.3f, 0.6f, 1.0f};
-					Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
-
-			        Gdx.gl11.glPushMatrix();
-			        Gdx.gl11.glTranslatef(0, 3.5f, 0);
-			        long tmp = asdf-System.currentTimeMillis();
-			        float xxx = (tmp % 1000)*0.001f;
-			        
-			        Gdx.gl11.glScalef(xxx, xxx, xxx);
-			        FSphere.draw();
-			        FSphere.toggleDrawLines();
-
-			        Gdx.gl11.glScalef(1.5f, 1.5f, 1.5f);
-			        Gdx.gl11.glRotatef(0.05f * tmp, 1, 1, 1);
-			        FSphere.draw();
-
-			        FSphere.toggleDrawLines();
-			        Gdx.gl11.glPopMatrix();
-				}
-				
-				Gdx.gl11.glScalef(0.95f*5, 0.95f, 0.95f*5);
-				drawBox();
-				Gdx.gl11.glPopMatrix();
-				
-				if (fx==FGoal.x && fz==FGoal.y){
-					materialDiffuse = new float[]{0.2f, 0.3f, 0.6f, 1.0f};
-					Gdx.gl11.glMaterialfv(GL11.GL_FRONT, GL11.GL_DIFFUSE, materialDiffuse, 0);
-				}
-			}
-		}
-	}
-	*/
+	
 	private void drawWalls(int AStartX, int AStartY, int AStartZ, int AEndX, int AEndY, int AEndZ){
 		// set material for the walls
 		float[] materialDiffuse = {0.2f, 0.8f, 0.2f, 1.0f};
@@ -309,50 +275,61 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		for (int x=AStartX; x<AEndX; x++){
 			for (int y=AStartY; y<AEndY; y++){
 				for (int z=AStartZ; z<AEndZ; z++){
+					// draw goal
+					if (x==FGoal.FX && y==FGoal.FY && z==FGoal.FZ){
+						Gdx.gl11.glPushMatrix();
+						Gdx.gl11.glColor4f(0, 0, 1, 1);
+				        Gdx.gl11.glTranslatef(-x*5, y*5, z*5);
+				        FSphere.draw();
+				        Gdx.gl11.glPopMatrix();
+					}
+					
+					// draw visited
+					if (FMaze[x][y][z].FVisited){
+						Gdx.gl11.glPushMatrix();
+						Gdx.gl11.glColor4f(1, 0, 0, 1);
+				        Gdx.gl11.glTranslatef(-x*5, y*5, z*5);
+				        Gdx.gl11.glScalef(0.1f, 0.1f, 0.1f);
+				        FSphere.draw();
+				        Gdx.gl11.glPopMatrix();
+					} else if (FMaze[x][y][z].EatMe(FMaze)){
+						Gdx.gl11.glPushMatrix();
+						Gdx.gl11.glColor4f(0, 1, 0, 1);
+				        Gdx.gl11.glTranslatef(-x*5, y*5, z*5);
+				        Gdx.gl11.glScalef(0.1f, 0.1f, 0.1f);
+				        FSphere.draw();
+				        Gdx.gl11.glPopMatrix();
+					}
+					
+					Gdx.gl11.glColor4f(1, 1, 1, 1);
+					
 					// draw edges
 					if (x==0){
-						Gdx.gl11.glPushMatrix();
-						Gdx.gl11.glTranslatef(-x*5+2.5f, y*5, z*5);
-						Gdx.gl11.glScalef(.25f, 5.25f, 5.25f);
-						drawBox();
-						Gdx.gl11.glPopMatrix();
+						drawBox(-x*5+2.5f, y*5, z*5, .25f, 5.25f, 5.25f);
 					}
 					if (y==0){
-						Gdx.gl11.glPushMatrix();
-						Gdx.gl11.glTranslatef(-x*5, y*5-2.5f, z*5);
-						Gdx.gl11.glScalef(5.25f, .25f, 5.25f);
-						drawBox();
-						Gdx.gl11.glPopMatrix();
+						drawBox(-x*5, y*5-2.5f, z*5, 5.25f, .25f, 5.25f);
+						Gdx.gl11.glColor4f(.5f, .5f, .5f, 1);
+						drawBox(-x*5, y*5-2.4f, z*5, 5.25f, .25f, 5.25f);
+						Gdx.gl11.glColor4f(1, 1, 1, 1);
 					}
 					if (z==0){
-						Gdx.gl11.glPushMatrix();
-						Gdx.gl11.glTranslatef(-x*5, y*5, z*5-2.5f);
-						Gdx.gl11.glScalef(5.25f, 5.25f, .25f);
-						drawBox();
-						Gdx.gl11.glPopMatrix();
+						drawBox(-x*5, y*5, z*5-2.5f, 5.25f, 5.25f, .25f);
 					}
 					
 					// draw walls
 					if (FMaze[x][y][z].Wall_X()){
-						Gdx.gl11.glPushMatrix();
-						Gdx.gl11.glTranslatef(-x*5-2.5f, y*5, z*5);
-						Gdx.gl11.glScalef(.25f, 5.25f, 5.25f);
-						drawBox();
-						Gdx.gl11.glPopMatrix();
+						drawBox(-x*5-2.5f, y*5, z*5, .25f, 5.25f, 5.25f);
 					}
 					if (FMaze[x][y][z].Wall_Y()){
-						Gdx.gl11.glPushMatrix();
-						Gdx.gl11.glTranslatef(-x*5, y*5+2.5f, z*5);
-						Gdx.gl11.glScalef(5.25f, .25f, 5.25f);
-						drawBox();
-						Gdx.gl11.glPopMatrix();
+						drawBox(-x*5, y*5+2.5f, z*5, 5.25f, .25f, 5.25f);
+						
+						Gdx.gl11.glColor4f(.5f, .5f, .5f, 1);
+						drawBox(-x*5, y*5+2.6f, z*5, 5.25f, .25f, 5.25f);
+						Gdx.gl11.glColor4f(1, 1, 1, 1);
 					}
 					if (FMaze[x][y][z].Wall_Z()){
-						Gdx.gl11.glPushMatrix();
-						Gdx.gl11.glTranslatef(-x*5, y*5, z*5+2.5f);
-						Gdx.gl11.glScalef(5.25f, 5.25f, .25f);
-						drawBox();
-						Gdx.gl11.glPopMatrix();
+						drawBox(-x*5, y*5, z*5+2.5f, 5.25f, 5.25f, .25f);
 					}
 				}
 			}
@@ -381,16 +358,18 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.gl11.glLightfv(GL11.GL_LIGHT1, GL11.GL_POSITION, lightPosition1, 0);
 		*/
 		// Draw objects!
-		// limit view to area around the player 20X20
-		/*Point player = GetPointCoordinates(cam.eye);
-		int x_start = Math.max(player.x-10, 0);
-		int y_start = Math.max(player.y-10, 0);
-		int x_end = Math.min(player.x+10, FMaze.length-1);
-		int y_end = Math.min(player.y+10, FMaze[0].length-1);*/
-		System.out.println(GetPointCell(cam.eye));
+		// limit view to area around the player 8X8X8
+		Cell player = GetPointCell(cam.eye);
+		int x_start = Math.max(player.FX-4, 0);
+		int y_start = Math.max(player.FY-4, 0);
+		int z_start = Math.max(player.FZ-4, 0);
+		int x_end = Math.min(player.FX+4, FMaze.length);
+		int y_end = Math.min(player.FY+4, FMaze[0].length);
+		int z_end = Math.min(player.FZ+4, FMaze[0][0].length);
+		
 		//drawFloor(x_start, y_start, x_end, y_end);
 		//drawWalls(-1, -1, -1, FMaze.length, FMaze[0].length, FMaze[0][0].length);
-		drawWalls(0, 0, 0, FMaze.length, FMaze[0].length, FMaze[0][0].length);
+		drawWalls(x_start, y_start, z_start, x_end, y_end, z_end);
 	}
 
 	@Override

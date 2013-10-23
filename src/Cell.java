@@ -4,6 +4,7 @@ import java.util.*;
 public class Cell {
 	private boolean FWall_X, FWall_Y, FWall_Z;	
 	public int FX, FY, FZ;
+	public boolean FVisited;
 	
 	public Cell(int AX, int AY, int AZ){
 		FWall_X = true;
@@ -25,6 +26,27 @@ public class Cell {
 	
 	public boolean Wall_Z(){
 		return FWall_Z;
+	}
+	
+	public boolean EatMe(Cell[][][] ACells){
+		if (FVisited) return true;
+		
+		int count = 0;
+		
+		// 6 directions
+		// either wall between or out of bounds or the cell is visited
+		
+		// the border check not needed? borders always have their walls!
+		if (Wall_X() || FX==ACells.length-1 || ACells[FX+1][FY][FZ].FVisited) count++;
+		if (Wall_Y() || FY==ACells[0].length-1 || ACells[FX][FY+1][FZ].FVisited) count++;
+		if (Wall_Z() || FZ==ACells[0][0].length-1 || ACells[FX][FY][FZ+1].FVisited) count++;
+		
+		if (FX==0 || ACells[FX-1][FY][FZ].Wall_X() || ACells[FX-1][FY][FZ].FVisited) count++;
+		if (FY==0 || ACells[FX][FY-1][FZ].Wall_Y() || ACells[FX][FY-1][FZ].FVisited) count++;
+		if (FZ==0 || ACells[FX][FY][FZ-1].Wall_Z() || ACells[FX][FY][FZ-1].FVisited) count++;
+		
+		// if at least 5 are valid then mark as visited
+		return count>4;
 	}
 	
 	private static void ReZone(int[][][] AZone, int AOld, int ANew, int x, int y, int z){

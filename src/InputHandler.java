@@ -5,37 +5,31 @@ public class InputHandler {
 	private static final int FSpeed = 10;
 	
 	public static void HandleUserInput(Camera ACam, float ADeltaTime, boolean AFlightMode){
+		ACam.yaw(Gdx.input.getX()-Gdx.graphics.getWidth()/2);
+		ACam.pitch(Gdx.graphics.getHeight()/2-Gdx.input.getY());
+		Gdx.input.setCursorPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
 		
+		// rotate
+		if(Gdx.input.isKeyPressed(Input.Keys.Q))
+			ACam.roll(90 * ADeltaTime);
+		if(Gdx.input.isKeyPressed(Input.Keys.E))
+			ACam.roll(-90 * ADeltaTime);
+
+		// slide up/down
+		if(Gdx.input.isKeyPressed(Input.Keys.R)) 
+			ACam.slide(0.0f, FSpeed * ADeltaTime, 0.0f);
+		if(Gdx.input.isKeyPressed(Input.Keys.F)) 
+			ACam.slide(0.0f, -FSpeed * ADeltaTime, 0.0f);
 		
-		if (AFlightMode){
-			if(Gdx.input.isKeyPressed(Input.Keys.UP)) 
-				ACam.pitch(90.0f * ADeltaTime);
-			
-			if(Gdx.input.isKeyPressed(Input.Keys.DOWN)) 
-				ACam.pitch(-90.0f * ADeltaTime);
-	
-			if(Gdx.input.isKeyPressed(Input.Keys.R)) 
-				ACam.slide(0.0f, FSpeed * ADeltaTime, 0.0f);
-			
-			if(Gdx.input.isKeyPressed(Input.Keys.F)) 
-				ACam.slide(0.0f, -FSpeed * ADeltaTime, 0.0f);
-		}
-		
-		if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) 
-			ACam.yaw(-180.0f * ADeltaTime);
-		
-		if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) 
-			ACam.yaw(180.0f * ADeltaTime);
-		
+		// slide forward/backwards
 		if(Gdx.input.isKeyPressed(Input.Keys.W))
 			ACam.slide(0.0f, 0.0f, -FSpeed * ADeltaTime);
-
 		if(Gdx.input.isKeyPressed(Input.Keys.S))
 			ACam.slide(0.0f, 0.0f, FSpeed * ADeltaTime);
 		
+		// slide left/right
 		if(Gdx.input.isKeyPressed(Input.Keys.A))
 			ACam.slide(-FSpeed * ADeltaTime, 0.0f, 0.0f);
-		
 		if(Gdx.input.isKeyPressed(Input.Keys.D))
 			ACam.slide(FSpeed * ADeltaTime, 0.0f, 0.0f);
 	}
