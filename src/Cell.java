@@ -1,4 +1,3 @@
-import java.awt.Point;
 import java.util.*;
 
 public class Cell {
@@ -82,20 +81,20 @@ public class Cell {
 	public static Cell[][][] kruskalMaze3D(int AX, int AY, int AZ)
 	{
 		int counter = 0;
-		Cell[][][] result = new Cell[AX][AY][AZ];
-		int[][][] trees = new int[AX][AY][AZ];
+		Cell[][][] result = new Cell[AX+2][AY+2][AZ+2];
+		int[][][] trees = new int[AX+2][AY+2][AZ+2];
 		
 		LinkedList<Wall3D> walls = new LinkedList<Wall3D>();
 		
-		for (int x=0; x<AX; x++){
-			for (int y=0; y<AY; y++){
-				for (int z=0; z<AZ; z++){
+		for (int x=0; x<AX+2; x++){
+			for (int y=0; y<AY+2; y++){
+				for (int z=0; z<AZ+2; z++){
 					result[x][y][z] = new Cell(x, y, z);
 					trees[x][y][z] = counter++;
 					
-					if (x<AX-1) walls.add(new Wall3D(x, y, z, 0));
-					if (y<AY-1) walls.add(new Wall3D(x, y, z, 1));
-					if (z<AZ-1) walls.add(new Wall3D(x, y, z, 2));
+					if (x>0 && x<AX) walls.add(new Wall3D(x, y, z, 0));
+					if (y>0 && y<AY) walls.add(new Wall3D(x, y, z, 1));
+					if (z>0 && z<AZ) walls.add(new Wall3D(x, y, z, 2));
 				}
 			}
 		}
@@ -128,38 +127,6 @@ public class Cell {
 				}
 			}	
 		}	
-		
-		return result;
-	}
-		
-	public static void combine(int[][] tree, int x1, int y1, int x2, int y2)
-	{
-		int temp = tree[x2][y2];
-		
-		tree[x2][y2] = tree[x1][y1];
-		
-		if(x2 > 0 && tree[x2 - 1][y2] == temp) combine(tree,x2,y2,x2-1,y2);
-		if(x2 < tree.length - 1 && tree[x2 + 1][y2] == temp) combine(tree,x2,y2,x2+1,y2);
-		if(y2 > 0 && tree[x2][y2 - 1] == temp) combine(tree,x2,y2,x2,y2 - 1);
-		if(y2 < tree[0].length-1 && tree[x2][y2 + 1] == temp) combine(tree,x2,y2,x2,y2+1);
-	}
-	
-	public static Cell[][][] ExampleMaze(int AX, int AY, int AZ){
-		Cell[][][] result = new Cell[AX][AY][AZ];
-		
-		for (int x=0; x<AX; x++){
-			for (int y=0; y<AY; y++){
-				for (int z=0; z<AZ; z++){				
-					result[x][y][z] = new Cell(x, y, z);
-					result[x][y][z].FWall_X = x==0;
-					result[x][y][z].FWall_Y = y==0;
-					result[x][y][z].FWall_Z = z==0;
-				}
-			}
-		}
-		
-		/*result[5][3].FSouthWall = true;
-		result[3][5].FEastWall = true;*/
 		
 		return result;
 	}

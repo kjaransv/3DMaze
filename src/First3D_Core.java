@@ -55,9 +55,9 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		FMaze = Cell.kruskalMaze3D(x, y, z);
 		//FMaze = Cell.ExampleMaze(x, y, z);
 
-		FGoal = FMaze[(int)(Math.random()*x)][(int)(Math.random()*y)][(int)(Math.random()*z)];
+		FGoal = FMaze[(int)(Math.random()*x+1)][(int)(Math.random()*y+1)][(int)(Math.random()*z+1)];
 		
-		cam = new Camera(new Point3D(0.0f, 0.0f, 0.0f), new Point3D(2.0f, .0f, 1.0f), new Vector3D(0.0f, 1.0f, 0.0f));
+		cam = new Camera(new Point3D(-5.0f, 5.0f, 5.0f), new Point3D(-3.0f, 5.0f, 6.0f), new Vector3D(0.0f, 1.0f, 0.0f));
 		
 		FSphere = new Sphere(10, 30);
 	}
@@ -65,32 +65,82 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	private Cell GetPointCell(Point3D APoint){
 		float offset = 2.5f;
 		
+		//if (APoint.x<-offset || APoint.y<-offset || APoint.z<-offset) return null;
+		
 		return FMaze[(int)(-APoint.x+offset)/5][(int)(APoint.y+offset)/5][(int)(APoint.z+offset)/5];
 	}
 	
 	private boolean CheckCollision(Point3D AStart, Point3D AEnd){
-		/*
-		
 		// TODO Also check the small edges, north/south edge of east walls and west/east edge of south walls
 		
 		// add or subtract wall width
 		Point3D tmp = AEnd.clone();
 		if (tmp.x<AStart.x) tmp.x-= 1.75f; else if (tmp.x>AStart.x) tmp.x+= 1.75f;		
-		if (tmp.y<AStart.y) tmp.y-= 1.75f; else if (tmp.y>AStart.x) tmp.y+= 1.75f;		
+		if (tmp.y<AStart.y) tmp.y-= 1.75f; else if (tmp.y>AStart.x) tmp.y+= 1.75f;	
 		if (tmp.z<AStart.z) tmp.z-= 1.75f; else if (tmp.z>AStart.z) tmp.z+= 1.75f;
 		
 		// calculate start and end cell
 		Cell start = GetPointCell(AStart);
 		Cell end = GetPointCell(tmp);
-		
+				
 		// only allow a single cell move
 		
-		boolean l_e = start.y>0 && (AStart.z+2.5) % 5 < 1.75f;
+/*		boolean l_e = start.y>0 && (AStart.z+2.5) % 5 < 1.75f;
 		boolean h_e = (AStart.z+2.5) % 5 > 3.25f;
 
 		boolean l_s = start.x>0 && (AStart.x+2.5) % 5 < 1.75f;
 		boolean h_s = (AStart.x+2.5) % 5 > 3.25f;
-
+*/		
+		float xxx = 0.75f;
+		
+		if (end.FX<start.FX){
+			// -x
+			if (end.Wall_X()){
+				AStart.x = -(start.FX*5-xxx);
+				
+				return true;
+			}
+		} else if (end.FX>start.FX){
+			// +x
+			if (start.Wall_X()){
+				AStart.x = -(start.FX*5+xxx);
+				
+				return true;
+			}
+		}
+		
+		if (end.FY<start.FY){
+			// -y
+			if (end.Wall_Y()){
+				AStart.y = start.FY*5-xxx;
+				
+				return true;
+			}
+		} else if (end.FY>start.FY){
+			// +y
+			if (start.Wall_Y()){
+				AStart.y = start.FY*5+xxx;
+				
+				return true;
+			}
+		}
+		
+		if (end.FZ<start.FZ){
+			// -z
+			if (end.Wall_Z()){
+				AStart.z = start.FZ*5-xxx;
+				
+				return true;
+			}
+		} else if (end.FZ>start.FZ){
+			// +z
+			if (start.Wall_Z()){
+				AStart.z = start.FZ*5+xxx;
+				
+				return true;
+			}
+		}
+/*
 		// x<0 EAST
 		if (end.x<start.x){
 			if ((FMaze[start.x][start.y].EastWall()) ||
@@ -219,10 +269,10 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		InputHandler.HandleUserInput(cam, FDeltaTime, true);
 		
-		/*if (CheckCollision(start, cam.eye)){
+		if (CheckCollision(start, cam.eye)){
 			// the collision check modifies the start point in the event of a collision
 			cam.eye = start; //TODO 
-		}*/
+		}
 		
 		Cell to = GetPointCell(cam.eye);
 		if (to == FGoal){
