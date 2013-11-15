@@ -7,7 +7,7 @@ import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.BufferUtils;
 
-public class Box extends GameObject{
+public class ScullFloor extends GameObject{
 	private static FloatBuffer FVertexBuffer = CreateBuffer();
 
 	private float FX, FY, FZ;
@@ -38,7 +38,7 @@ public class Box extends GameObject{
 		return VertexBuffer;
 	}
 	
-	public Box(float AX, float AY, float AZ, float ASizeX, float ASizeY, float ASizeZ, int color,String textureImage){
+	public ScullFloor(float AX, float AY, float AZ, float ASizeX, float ASizeY, float ASizeZ, int color,String textureImage){
 		FColor = color;
 		
 		FX = -AX;
