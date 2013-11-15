@@ -1,5 +1,6 @@
-import com.badlogic.gdx.graphics.GL11;
+import java.nio.ByteBuffer;
 
+import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.Gdx;
 
 public class Camera
@@ -57,5 +58,28 @@ public class Camera
 		Vector3D t = v;
 		v = Vector3D.sum(Vector3D.mult(c, t), Vector3D.mult(s, n));
 		n = Vector3D.sum(Vector3D.mult(-s, t), Vector3D.mult(c, n));
+	}
+	
+	public static byte [] float2ByteArray(float value)
+	{  
+	     return ByteBuffer.allocate(4).putFloat(value).array();
+	}
+	
+	@Override
+	public String toString() {
+		String s = "";
+		
+		byte[] b;
+		
+		b = float2ByteArray(eye.x);
+		s += eye.x+":"+b[0]+","+b[1]+","+b[2]+","+b[3]+",";
+
+		b = float2ByteArray(eye.y);
+		s += eye.y+":"+b[0]+","+b[1]+","+b[2]+","+b[3]+",";
+
+		b = float2ByteArray(eye.z);
+		s += eye.z+":"+b[0]+","+b[1]+","+b[2]+","+b[3]+",";
+
+		return s;
 	}
 }

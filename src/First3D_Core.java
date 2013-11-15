@@ -1,3 +1,4 @@
+import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import GameObjects.*;
@@ -21,7 +22,21 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	Texture tex;
 	String textureImage = "blackbrick.png";
 	
-	private GameObject FObjects[]; 
+	private GameObject FObjects[];
+	private byte FGameState[] = new byte[]{0,3,
+			//61,-43,-106,-92,65,29,5,53,66,7,6,47
+			0,0,0,0, 0,0,0,0, 0,0,0,0,
+			0,0,0,0, 0,0,0,0, 0,0,0,0,    0,
+
+			// corner
+			65,37,95,-110,64,-109,-8,33,65,-17,-36,114,
+			0,0,0,0, 0,0,0,0, 0,0,0,0,    0,
+			
+			//
+			65,34,98,-49,64,-115,29,23,66,11,-73,31,
+			0,0,0,0, 0,0,0,0, 0,0,0,0,    1
+			
+	}; // TODO make test
 
 	private void NextLevel(){
 		int i = 0;
@@ -134,6 +149,26 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 
 		InputHandler.HandleUserInput(cam, FDeltaTime, true);
 	}
+	
+	private void RenderPlayer(ByteBuffer Abuffer){
+		float x = Abuffer.getFloat();
+		float y = Abuffer.getFloat();
+		float z = Abuffer.getFloat();
+
+		float xr = Abuffer.getFloat();
+		float yr = Abuffer.getFloat();
+		float zr = Abuffer.getFloat();
+		
+		int team = Abuffer.get();
+		
+		Sphere s = new Sphere(4,8);
+		
+		Gdx.gl11.glPushMatrix();
+		Gdx.gl11.glTranslatef(x, y, z);
+		System.out.println(x+":"+y+":"+z);
+		s.draw();
+		Gdx.gl11.glPopMatrix();
+	}
 		
 	private void display() {
 		Gdx.gl11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
@@ -144,6 +179,17 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		for (int i=0; i<FObjects.length; i++){
 			if (FObjects[i] != null)
 				FObjects[i].Render();
+		}
+		
+		// Draw State
+		byte[] state = FGameState;
+		ByteBuffer buf = ByteBuffer.wrap(state);
+		if (buf.get()>0){
+			// TODO: render bubble powerup
+		}
+		int players = buf.get();
+		for (int i=0; i<players; i++){
+			RenderPlayer(buf);
 		}
 	}
 
@@ -176,16 +222,15 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 
 	@Override
 	public boolean keyDown(int arg0) {
-		System.out.println(arg0);
-		
 		return false;
 	}
 
 	@Override
 	public boolean keyTyped(char arg0) {
-		//System.out.println((int)arg0);
-		
-		if (arg0==27) Gdx.app.exit();
+		if (arg0==27) {
+			System.out.println(cam);
+			Gdx.app.exit();
+		}
 		return false;
 	}
 
