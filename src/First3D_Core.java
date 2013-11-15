@@ -27,40 +27,61 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		int i = 0;
 		
 		FObjects = new GameObject[40];
+		
 		// ground
-		FObjects[i++] = new Box(0,0,0, 50,1,50, 1);
+		FObjects[i++] = new Box(0,0,-30, 50,1,50, 1);
+		
+		FObjects[i++] = new Box(0,0,30, 50,1,-50, 1);
+		
 		// edge walls
-		FObjects[i++] = new Box(-15f,10,20, 20,20,10, 2);
-		FObjects[i++] = new Box(15f,10,20, -20,20,10, 2);
-		// left wall
-		FObjects[i++] = new Box(-20f,5,-5, 10,10,40, 2);
-		// right wall
-		FObjects[i++] = new Box(20f,5,-5, -10,10,40, 2);
+		FObjects[i++] = new Box(-15f,10,-10, 20,20,10, 2); //left
+		FObjects[i++] = new Box(15f,10,-10, -20,20,10, 2); //right
+
+		FObjects[i++] = new Box(-15f,10,10, 20,20,-10, 2); //left
+		FObjects[i++] = new Box(15f,10,10, -20,20,-10, 2); //right
+		
+		// side edge walls
+		FObjects[i++] = new Box(-20f,5,-35, 10,10,40, 2); //left
+		FObjects[i++] = new Box(20f,5,-35, -10,10,40, 2); //right
+		
+		FObjects[i++] = new Box(-20f,5,35, 10,10,-40, 2); //left
+		FObjects[i++] = new Box(20f,5,35, -10,10,-40, 2); //right
 		
 		// ramp, ground to side wall
-		FObjects[i++] = new Box2(-10,5,10, 10,10,10, 3); //left
-		FObjects[i++] = new Box2(10,5,10, -10,10,10, 3); //right
+		FObjects[i++] = new Box2(-10,5,-20, 10,10,10, 3); //left
+		FObjects[i++] = new Box2(10,5,-20, -10,10,10, 3); //right
+		
+		FObjects[i++] = new Box2(-10,5,20, 10,10,-10, 3); //left
+		FObjects[i++] = new Box2(10,5,20, -10,10,-10, 3); //right
 		
 		// ramp, side wall to edge wall
-		FObjects[i++] = new Box2(-22.5f,15,10, 5,10,10, 3); //left
-		FObjects[i++] = new Box2(22.5f,15,10, -5,10,10, 3); //right
+		FObjects[i++] = new Box2(-22.5f,15,-20, 5,10,10, 3); //left
+		FObjects[i++] = new Box2(22.5f,15,-20, -5,10,10, 3); //right
+		
+		FObjects[i++] = new Box2(-22.5f,15,20, 5,10,-10, 3); //left
+		FObjects[i++] = new Box2(22.5f,15,20, -5,10,-10, 3); //right
 		
 		// ramp, side wall to flag wall
-		FObjects[i++] = new Box2(-10,15,-20, 10,10,10, 3); //left
-		FObjects[i++] = new Box2(10,15,-20, -10,10,10, 3); //right
+		FObjects[i++] = new Box2(-10,15,-50, 10,10,10, 3); //left
+		FObjects[i++] = new Box2(10,15,-50, -10,10,10, 3); //right
+		
+		FObjects[i++] = new Box2(-10,15,50, 10,10,-10, 3); //left
+		FObjects[i++] = new Box2(10,15,50, -10,10,-10, 3); //right
 		
 		// Flag wall
-		FObjects[i++] = new Box(0,10,-20, 10,20,10, 2);
+		FObjects[i++] = new Box(0,10,-50, 10,20,10, 2);
+		
+		FObjects[i++] = new Box(0,10,50, 10,20,-10, 2);
 		
 		// hornpunktar
-		FObjects[i++] = new Box(0,0,0, 1,5,1, 2);
+		/*FObjects[i++] = new Box(0,0,0, 1,5,1, 2);
 		FObjects[i++] = new Box(-25,0,-25, 1,5,1, 2);
 		
 		FObjects[i++] = new Box(-25,0,-24, 1,5,1, 2);
 		FObjects[i++] = new Box(-25,0,-23, 1,5,1, 2);
 		
 		FObjects[i++] = new Box(-24,0,-25, 1,5,1, 1);
-		FObjects[i++] = new Box(-23,0,-25, 1,5,1, 1);
+		FObjects[i++] = new Box(-23,0,-25, 1,5,1, 1);*/
 
 		cam = new Camera(new Point3D(-5.0f, 5.0f, 5.0f), new Point3D(-3.0f, 5.0f, 6.0f), new Vector3D(0.0f, 1.0f, 0.0f));
 	}
