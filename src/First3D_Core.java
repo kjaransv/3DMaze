@@ -1,13 +1,8 @@
-import java.awt.Point;
 import java.nio.FloatBuffer;
 
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL11;
-import com.badlogic.gdx.graphics.g2d.BitmapFont;
-import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
@@ -85,12 +80,15 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 				
 		// only allow a single cell move
 		
-/*		boolean l_e = start.y>0 && (AStart.z+2.5) % 5 < 1.75f;
-		boolean h_e = (AStart.z+2.5) % 5 > 3.25f;
-
-		boolean l_s = start.x>0 && (AStart.x+2.5) % 5 < 1.75f;
-		boolean h_s = (AStart.x+2.5) % 5 > 3.25f;
-*/		
+		boolean l_x = start.FX>0 && (AStart.x+2.5) % 5 < 1.75f;
+		boolean h_x = (AStart.x+2.5) % 5 > 3.25f;
+		
+		boolean l_y = start.FY>0 && (AStart.y+2.5) % 5 < 1.75f;
+		boolean h_y = (AStart.y+2.5) % 5 > 3.25f;
+		
+		boolean l_z = start.FZ>0 && (AStart.z+2.5) % 5 < 1.75f;
+		boolean h_z = (AStart.z+2.5) % 5 > 3.25f;
+	
 		float xxx = 0.75f;
 		
 		if (end.FX<start.FX){
@@ -386,6 +384,29 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		}
 	}
 	
+	private void Lab10(){
+		Gdx.gl11.glEnable(Gdx.gl11.GL_BLEND);
+		Gdx.gl11.glBlendFunc(Gdx.gl11.GL_SRC_ALPHA, Gdx.gl11.GL_ONE_MINUS_SRC_ALPHA);
+		Gdx.gl11.glColor4f(1f, 0f, 0f, .5f);
+		
+		Gdx.gl11.glPushMatrix();
+        Gdx.gl11.glTranslatef(cam.eye.x, cam.eye.y, cam.eye.z);
+
+		//Gdx.gl11.glColor4f(0.25f, 0.1f, 0.25f, 0.5f);
+        Gdx.gl11.glColor4f(0, 1, 1, 0.1f);
+        Gdx.gl11.glScalef(5f, 5f, 5f);
+        FSphere.draw();
+        
+        //Gdx.gl11.glColor4f(0, 0, 0, 0.5f);
+        Gdx.gl11.glColor4f(1, 0, 0, 0.1f);
+        Gdx.gl11.glScalef(0.5f, 0.5f, 0.5f);
+        FSphere.draw();
+        
+        Gdx.gl11.glPopMatrix();
+        
+		Gdx.gl11.glDisable(Gdx.gl11.GL_BLEND);
+	}
+	
 	private void display() {
 		Gdx.gl11.glClear(GL11.GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
 		cam.setModelViewMatrix();
@@ -420,6 +441,8 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		//drawFloor(x_start, y_start, x_end, y_end);
 		//drawWalls(-1, -1, -1, FMaze.length, FMaze[0].length, FMaze[0][0].length);
 		drawWalls(x_start, y_start, z_start, x_end, y_end, z_end);
+		
+		Lab10();		
 	}
 
 	@Override
@@ -451,11 +474,15 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 
 	@Override
 	public boolean keyDown(int arg0) {
+		System.out.println(arg0);
+		
 		return false;
 	}
 
 	@Override
 	public boolean keyTyped(char arg0) {
+		//System.out.println((int)arg0);
+		
 		if (arg0==27) Gdx.app.exit();
 		return false;
 	}
