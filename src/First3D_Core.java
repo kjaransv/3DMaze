@@ -108,8 +108,11 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		FObjects[i++] = new Box2(-5,19.5f,5, 5,1,10, 0, 0,1,0, "wood.jpg");
 		
 		//ScullFloor
-		//finna einhverja fokking skull mynd sem virkar og setja hérna inn
 		FObjects[i++] = new ScullFloor(0,0,0, 10,1,10, 0, "wood.jpg");
+		
+		//Flags
+		FObjects[i++] = new Flag(0,19,-47.5f,0,0,0,0); //Flag 1
+		FObjects[i++] = new Flag(0,19,47.5f,180,0,1,0); //Flag 2
 		
 		cam = new Camera(new Point3D(-5.0f, 5.0f, 5.0f), new Point3D(-3.0f, 5.0f, 6.0f), new Vector3D(0.0f, 1.0f, 0.0f));
 	}
@@ -204,6 +207,12 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		for (int i=0; i<players; i++){
 			RenderPlayer(buf);
 		}
+		
+	}
+	
+	private void setFlags()
+	{
+		
 		
 	}
 
