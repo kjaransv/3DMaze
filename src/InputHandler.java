@@ -5,6 +5,8 @@ public class InputHandler {
 	private static final int FSpeed = 10;
 	
 	public static void HandleUserInput(Camera ACam, float ADeltaTime, boolean AFlightMode){
+		float y = ACam.eye.y;
+		
 		ACam.yaw(Gdx.input.getX()-Gdx.graphics.getWidth()/2);
 		ACam.pitch(Gdx.graphics.getHeight()/2-Gdx.input.getY());
 		Gdx.input.setCursorPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
@@ -32,5 +34,7 @@ public class InputHandler {
 			ACam.slide(-FSpeed * ADeltaTime, 0.0f, 0.0f);
 		if(Gdx.input.isKeyPressed(Input.Keys.D))
 			ACam.slide(FSpeed * ADeltaTime, 0.0f, 0.0f);
+		
+		//ACam.eye.y = y;
 	}
 }

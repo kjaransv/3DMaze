@@ -1,7 +1,12 @@
+
+import java.io.InputStream;
 import java.nio.FloatBuffer;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL11;
+import com.badlogic.gdx.graphics.Mesh;
+import com.badlogic.gdx.graphics.g3d.loaders.wavefront.ObjLoader;
 import com.badlogic.gdx.utils.BufferUtils;
 
 public class Sphere
@@ -13,8 +18,12 @@ public class Sphere
         private int vertexCount;
         private boolean drawLines = false;
         
+
+
         
         public Sphere(int i_stacks, int i_slices) {
+        	
+        	
                 stacks = i_stacks;
                 slices = i_slices;
                 vertexCount = 0;
@@ -46,6 +55,7 @@ public class Sphere
         }
 
         public void draw() {
+        	
                 //Gdx.gl11.glShadeModel(GL11.GL_SMOOTH);
                 Gdx.gl11.glEnableClientState(GL11.GL_NORMAL_ARRAY);
                 Gdx.gl11.glVertexPointer(3, GL11.GL_FLOAT, 0, vertexBuffer);
@@ -56,6 +66,8 @@ public class Sphere
                         else
                                 Gdx.gl11.glDrawArrays(GL11.GL_TRIANGLE_STRIP, i, (slices+1)*2);
                 }
+                
+        	
         }
         
         public void toggleDrawLines(){

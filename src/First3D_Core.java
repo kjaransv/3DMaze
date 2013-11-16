@@ -1,18 +1,28 @@
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
+import org.omg.CORBA.Environment;
+
 import GameObjects.*;
 
+import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g3d.loaders.ModelLoader;
+import com.badlogic.gdx.graphics.g3d.loaders.wavefront.ObjLoader;
+import com.badlogic.gdx.graphics.g3d.model.Model;
+import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
+
+
+
 
 public class First3D_Core implements ApplicationListener, InputProcessor
 {
-	
 	private float FDeltaTime;
 	
 	private Camera cam;
@@ -21,6 +31,9 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	FloatBuffer texCoordBuffer;
 	Texture tex;
 	String textureImage = "blackbrick.png";
+	
+	//Model stuff
+	Player player;
 	
 	private GameObject FObjects[];
 	private byte FGameState[] = new byte[]{0,3,
@@ -100,15 +113,14 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		cam = new Camera(new Point3D(-5.0f, 5.0f, 5.0f), new Point3D(-3.0f, 5.0f, 6.0f), new Vector3D(0.0f, 1.0f, 0.0f));
 	}
-		
+
+	
 	@Override
 	public void create() {
+
 		Gdx.input.setInputProcessor(this);
 		
-		/*Gdx.gl11.glEnable(GL11.GL_LIGHTING);
-		
-		Gdx.gl11.glEnable(GL11.GL_LIGHT0);
-		Gdx.gl11.glEnable(GL11.GL_LIGHT1);*/
+
 		
 		Gdx.gl11.glEnable(GL11.GL_DEPTH_TEST);
 		
@@ -119,8 +131,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.glu.gluPerspective(Gdx.gl11, 90, 1.333333f, 1.0f, 100.0f);
 
 		Gdx.gl11.glEnableClientState(GL11.GL_VERTEX_ARRAY);
-
-
+		
 		
 		//texture start ******************
 		
@@ -142,12 +153,13 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		//texture end ******************
 		
 		NextLevel();
+		
 	}
 	
 	private void update() {
 		FDeltaTime = Gdx.graphics.getDeltaTime();
 
-		InputHandler.HandleUserInput(cam, FDeltaTime, true);
+		InputHandler.HandleUserInput(cam, FDeltaTime, false);
 	}
 	
 	private void RenderPlayer(ByteBuffer Abuffer){
@@ -161,12 +173,12 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		int team = Abuffer.get();
 		
-		Sphere s = new Sphere(4,8);
+		Player p = new Player("ship.obj");
 		
 		Gdx.gl11.glPushMatrix();
 		Gdx.gl11.glTranslatef(x, y, z);
 		System.out.println(x+":"+y+":"+z);
-		s.draw();
+		p.drawPlayer();
 		Gdx.gl11.glPopMatrix();
 	}
 		
@@ -191,12 +203,16 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		for (int i=0; i<players; i++){
 			RenderPlayer(buf);
 		}
+		
 	}
 
 	@Override
 	public void render() {
+		
 		update();
+		
 		display();
+	  
 	}
 
 	
