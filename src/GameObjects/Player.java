@@ -21,19 +21,12 @@ public class Player {
 	
 	public void drawPlayer()
 	{
-
-		// Texture related BEGIN
 		Gdx.gl11.glShadeModel(GL11.GL_SMOOTH);
         
         Gdx.gl11.glEnable(GL11.GL_TEXTURE_2D);
         Gdx.gl11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         
         tex.bind();
-
-        //Gdx.gl11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, texCoordBuffer);
-        //Texture related END
-		
-		// draw batman!
 
         Fmodel.render();
 

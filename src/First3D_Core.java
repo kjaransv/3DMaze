@@ -173,10 +173,11 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		int team = Abuffer.get();
 		
-		Player p = new Player("ship.obj");
+		Player p = new Player("ship/ship.obj");
 		
 		Gdx.gl11.glPushMatrix();
 		Gdx.gl11.glTranslatef(x, y, z);
+		Gdx.gl11.glScalef(3f,3f,3f);
 		System.out.println(x+":"+y+":"+z);
 		p.drawPlayer();
 		Gdx.gl11.glPopMatrix();

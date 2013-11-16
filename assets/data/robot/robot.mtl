@@ -1,0 +1,24 @@
+# Blender MTL File: 'None'
+# Material Count: 2
+newmtl material_204
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.480000 0.480000 0.480000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd C:\lego\8\5b44cd1c.dds
+
+
+newmtl material_261
+Ns 0.000000
+Ka 0.000000 0.000000 0.000000
+Kd 0.480000 0.480000 0.480000
+Ks 0.000000 0.000000 0.000000
+Ni 1.000000
+d 1.000000
+illum 1
+map_Kd C:\lego\8\28644f27.dds
+
+
