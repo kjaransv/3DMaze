@@ -163,7 +163,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 
 		InputHandler.HandleUserInput(cam, FDeltaTime, false);
 		
-		FClient.UpdatePlayer(cam.eye, (byte) 0);
+		FClient.UpdatePlayer(cam.eye, (byte) 1);
 	}
 	
 	private void RenderPlayer(ByteBuffer Abuffer){

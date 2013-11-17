@@ -22,7 +22,7 @@ public class StateClient{
 			while (!interrupted()){
 				byte[] _data = new byte[1024];
 				DatagramPacket packet = FUdp.Receive(_data);
-				if (packet != null && !packet.getAddress().equals(FHost)){
+				if (packet != null /*&& !packet.getAddress().equals(FHost)*/){
 					FState = _data;
 				}
 			}
@@ -56,6 +56,9 @@ public class StateClient{
 	public StateClient() throws SocketException, UnknownHostException{
 		FIn = new Listen();
 		FOut = new Send();
+		
+		FIn.start();
+		FOut.start();
 	}
 	
 	public void Stop(){

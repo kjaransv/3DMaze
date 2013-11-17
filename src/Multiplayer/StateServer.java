@@ -24,7 +24,8 @@ public class StateServer{
 			while (!interrupted()){
 				byte[] _data = new byte[25];
 				DatagramPacket packet = FUdp.Receive(_data);
-				if (packet != null && !packet.getAddress().equals(FHost)){
+				System.out.println("santa");
+				if (packet != null /*&& !packet.getAddress().equals(FHost)*/){
 					String s = packet.getAddress().getHostName();
 					Integer i = FConnections.get(s);
 					if (i == null){
@@ -64,11 +65,14 @@ public class StateServer{
 	
 	private Listen FIn;
 	private Send FOut;
-	private byte[] FState;
+	private byte[] FState = new byte[1024];
 	
 	public StateServer() throws SocketException, UnknownHostException{
 		FIn = new Listen();
 		FOut = new Send();
+		
+		FIn.start();
+		FOut.start();
 	}
 	
 	public void Stop(){
