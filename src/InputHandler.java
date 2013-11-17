@@ -12,16 +12,20 @@ public class InputHandler {
 		Gdx.input.setCursorPosition(Gdx.graphics.getWidth()/2, Gdx.graphics.getHeight()/2);
 		
 		// rotate
+		
 		if(Gdx.input.isKeyPressed(Input.Keys.Q))
 			ACam.roll(90 * ADeltaTime);
 		if(Gdx.input.isKeyPressed(Input.Keys.E))
 			ACam.roll(-90 * ADeltaTime);
+			
 
 		// slide up/down
+		/*
 		if(Gdx.input.isKeyPressed(Input.Keys.R)) 
 			ACam.slide(0.0f, FSpeed * ADeltaTime, 0.0f);
 		if(Gdx.input.isKeyPressed(Input.Keys.F)) 
 			ACam.slide(0.0f, -FSpeed * ADeltaTime, 0.0f);
+			*/
 		
 		// slide forward/backwards
 		if(Gdx.input.isKeyPressed(Input.Keys.W))

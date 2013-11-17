@@ -48,55 +48,55 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		FObjects = new GameObject[40];
 		
 		// ground
-		FObjects[i++] = new Box(0,0,-30, 50,1,50, 0,"blackbrick.png");
+		FObjects[i++] = new Box(0,0,-30, 			50,1,50, 		0,		"blackbrick.png");
 		
-		FObjects[i++] = new Box(0,0,30, 50,1,-50, 0,"blackbrick.png");
+		FObjects[i++] = new Box(0,0,30, 			50,1,-50, 		0,		"blackbrick.png");
 		
 		// edge walls
-		FObjects[i++] = new Box(-15f,10,-10, 20,20,10, 0,"blackbrick.png"); //left
-		FObjects[i++] = new Box(15f,10,-10, -20,20,10, 0,"blackbrick.png"); //right
+		FObjects[i++] = new Box(-15f,10,-10, 		 20,20,10, 		0,		"blackbrick.png"); //left
+		FObjects[i++] = new Box(15f,10,-10, 		-20,20,10, 		0,		"blackbrick.png"); //right
 
-		FObjects[i++] = new Box(-15f,10,10, 20,20,-10, 0,"blackbrick.png"); //left
-		FObjects[i++] = new Box(15f,10,10, -20,20,-10, 0,"blackbrick.png"); //right
+		FObjects[i++] = new Box(-15f,10,10, 		 20,20,-10, 	0,		"blackbrick.png"); //left
+		FObjects[i++] = new Box(15f,10,10, 			-20,20,-10, 	0,		"blackbrick.png"); //right
 		
 		// side edge walls
-		FObjects[i++] = new Box(-20f,5,-35, 10,10,40, 0,"blackbrick.png"); //left
-		FObjects[i++] = new Box(20f,5,-35, -10,10,40, 0,"blackbrick.png"); //right
+		FObjects[i++] = new Box(-20f,5,-35, 		 10,10,40, 		0,		"blackbrick.png"); //left
+		FObjects[i++] = new Box(20f,5,-35, 			-10,10,40, 		0,		"blackbrick.png"); //right
 		
-		FObjects[i++] = new Box(-20f,5,35, 10,10,-40, 0,"blackbrick.png"); //left
-		FObjects[i++] = new Box(20f,5,35, -10,10,-40, 0,"blackbrick.png"); //right
+		FObjects[i++] = new Box(-20f,5,35, 			 10,10,-40, 	0,		"blackbrick.png"); //left
+		FObjects[i++] = new Box(20f,5,35,			-10,10,-40, 	0,		"blackbrick.png"); //right
 		
 		// ramp, ground to side wall
-		FObjects[i++] = new Box2(-10,4.25f,-20, 15,1,5, 0, 0,0,1, "wood.jpg"); //left
-		FObjects[i++] = new Box2(10,4.25f,-20, -15,1,5, 0, 0,0,-1, "wood.jpg"); //right
+		FObjects[i++] = new Box2(-12.5f,2.5f,-20, 	 5,5,10, 		0, 		0,0,0, 		"wood.jpg"); //left
+		FObjects[i++] = new Box2(12.5f,2.5f,-20, 	-5,5,10, 		0, 		0,0,0, 		"wood.jpg"); //right
 		
-		FObjects[i++] = new Box2(-10,4.25f,17.5f, 15,1,-5, 0, 0,0,1, "wood.jpg"); //left
-		FObjects[i++] = new Box2(10,4.25f,17.5f, -15,1,-5, 0, 0,0,-1, "wood.jpg"); //right
+		FObjects[i++] = new Box2(-12.5f,2.25f,20, 	 5,5,-10, 		0,		0,0,0, 		"wood.jpg"); //left
+		FObjects[i++] = new Box2(12.5f,2.25f,20, 	-5,5,-10, 		0, 		0,0,0, 		"wood.jpg"); //right
 		
 		// ramp, side wall to edge wall
-		FObjects[i++] = new Box2(-22.5f,14.25f,-20, 5,1,15, 0, -1,0,0, "wood.jpg"); //left
-		FObjects[i++] = new Box2(22.5f,14.25f,-20, -5,1,15, 0, -1,0,0, "wood.jpg"); //right
+		FObjects[i++] = new Box2(-20f,11.75f,-17,  	 5,5,5, 		0, 		0,0,0, 		"wood.jpg"); //left
+		FObjects[i++] = new Box2(20f,11.75f,-17, 	-5,5,5, 		0, 		0,0,0, 		"wood.jpg"); //right
 		
-		FObjects[i++] = new Box2(-22.5f,14.25f,20, 5,1,-15, 0, 1,0,0, "wood.jpg"); //left
-		FObjects[i++] = new Box2(22.5f,14.25f,20, -5,1,-15, 0, 1,0,0, "wood.jpg"); //right
+		FObjects[i++] = new Box2(-20f,11.75f,17, 	 5,5,-5, 		0, 		0,0,0, 		"wood.jpg"); //left
+		FObjects[i++] = new Box2(20,11.75f,17, 		-5,5,-5, 		0, 		0,0,0, 		"wood.jpg"); //right
 		
 		// ramp, side wall to flag wall
-		FObjects[i++] = new Box2(-10,14.25f,-50, 15,1,10, 0, 0,0,-1, "wood.jpg"); //left
-		FObjects[i++] = new Box2(10,14.25f,-50, -15,1,10, 0, 0,0,1, "wood.jpg"); //right
+		FObjects[i++] = new Box2(-10,7.5f,-50, 	 	 5,20,5, 		0, 		0,0,0, 		"wood.jpg"); //left
+		FObjects[i++] = new Box2(10,7.5f,-50, 		-5,20,5, 		0, 		0,0,0, 		"wood.jpg"); //right
 		
-		FObjects[i++] = new Box2(10,14.25f,50, -15,1,-10, 0, 0,0,1, "wood.jpg"); //right
-		FObjects[i++] = new Box2(-10,14.25f,50, -15,1,10, 0, 0,0,-1, "wood.jpg"); //left
+		FObjects[i++] = new Box2(10,7.5f,50, 		-5,20,-5, 		0, 		0,0,0, 		"wood.jpg"); //right
+		FObjects[i++] = new Box2(-10,7.5f,50, 		-5,20,5, 		0, 		0,0,0, 		"wood.jpg"); //left
 		
 		// Flag wall
 		FObjects[i++] = new Box(0,10,-50, 10,20,10, 0,"blackbrick.png");
 		FObjects[i++] = new Box(0,10,50, 10,20,-10, 0,"blackbrick.png");
 		
 		//Center bridges
-		FObjects[i++] = new Box2(-5,19.5f,-5, 10,1,5, 0, 0,1,0, "wood.jpg");
-		FObjects[i++] = new Box2(5,19.5f,5, 5,1,10, 0, 0,-1,0, "wood.jpg");
+		FObjects[i++] = new Box2(-5,19.4f,-5, 	10,1,5, 	0, 		0,1,0, "wood.jpg");
+		FObjects[i++] = new Box2(5,19.4f,5, 	5,1,10, 	0, 		0,-1,0, "wood.jpg");
 		
-		FObjects[i++] = new Box2(5,19.5f,-5, 10,1,5, 0, 0,-1,0, "wood.jpg");
-		FObjects[i++] = new Box2(-5,19.5f,5, 5,1,10, 0, 0,1,0, "wood.jpg");
+		FObjects[i++] = new Box2(5,19.5f,-5, 	10,1,5, 	0, 		0,-1,0, 	"wood.jpg");
+		FObjects[i++] = new Box2(-5,19.5f,5, 	5,1,10, 	0, 		0,1,0, 	"wood.jpg");
 		
 		//ScullFloor
 		FObjects[i++] = new ScullFloor(0,0,0, 10,1,10, 0, "wood.jpg");
@@ -204,8 +204,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		int players = buf.get();
 		for (int i=0; i<players; i++){
 			RenderPlayer(buf);
-		}
-		
+		}		
 	}
 	
 	private void setFlags()
