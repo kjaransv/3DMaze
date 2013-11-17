@@ -51,7 +51,7 @@ public class StateClient{
 	private Listen FIn;
 	private Send FOut;
 	private byte[] FState = new byte[1024];
-	private byte[] FPlayer;
+	private byte[] FPlayer = new byte[25];
 	
 	public StateClient() throws SocketException, UnknownHostException{
 		FIn = new Listen();

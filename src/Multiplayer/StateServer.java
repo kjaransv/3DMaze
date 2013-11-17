@@ -24,9 +24,9 @@ public class StateServer{
 			while (!interrupted()){
 				byte[] _data = new byte[25];
 				DatagramPacket packet = FUdp.Receive(_data);
-				System.out.println("santa");
 				if (packet != null /*&& !packet.getAddress().equals(FHost)*/){
 					String s = packet.getAddress().getHostName();
+					//System.out.println(s);
 					Integer i = FConnections.get(s);
 					if (i == null){
 						i = FConnections.size();

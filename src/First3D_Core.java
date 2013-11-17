@@ -163,7 +163,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 
 		InputHandler.HandleUserInput(cam, FDeltaTime, false);
 		
-		FClient.UpdatePlayer(cam.eye, (byte) 1);
+		FClient.UpdatePlayer(cam.eye, (byte) 1); // TODO missing team variable
 	}
 	
 	private void RenderPlayer(ByteBuffer Abuffer){
@@ -180,7 +180,6 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.gl11.glPushMatrix();
 		Gdx.gl11.glTranslatef(x, y, z);
 		Gdx.gl11.glScalef(3f,3f,3f);
-		System.out.println(x+":"+y+":"+z);
 		FPlayer.drawPlayer();
 		Gdx.gl11.glPopMatrix();
 	}
@@ -202,6 +201,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 			// TODO: render bubble powerup
 		}
 		int players = buf.get();
+		//System.out.println(players);
 		for (int i=0; i<players; i++){
 			RenderPlayer(buf);
 		}
