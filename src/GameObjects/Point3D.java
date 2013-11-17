@@ -1,3 +1,5 @@
+package GameObjects;
+
 public class Point3D {
 	public float x;
 	public float y;

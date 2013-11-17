@@ -1,5 +1,9 @@
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
+import Multiplayer.StateServer;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -8,6 +12,15 @@ public class DesktopStarter
 {
 	public static void main(String[] args)
 	{
+		if (true){
+			try {
+				new StateServer();
+			} catch (SocketException | UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
         // Getting the current desktop screen resolution.
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension scrnsize = toolkit.getScreenSize();

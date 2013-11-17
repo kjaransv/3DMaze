@@ -1,9 +1,12 @@
+import java.net.SocketException;
+import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.FloatBuffer;
 
 import org.omg.CORBA.Environment;
 
 import GameObjects.*;
+import Multiplayer.StateClient;
 
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL11;
@@ -33,23 +36,11 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	String textureImage = "blackbrick.png";
 	
 	//Model stuff
-	Player player;
+	Player FPlayer;
+	
+	private StateClient FClient;
 	
 	private GameObject FObjects[];
-	private byte FGameState[] = new byte[]{0,3,
-			//61,-43,-106,-92,65,29,5,53,66,7,6,47
-			0,0,0,0, 0,0,0,0, 0,0,0,0,
-			0,0,0,0, 0,0,0,0, 0,0,0,0,    0,
-
-			// corner
-			65,37,95,-110,64,-109,-8,33,65,-17,-36,114,
-			0,0,0,0, 0,0,0,0, 0,0,0,0,    0,
-			
-			//
-			65,34,98,-49,64,-115,29,23,66,11,-73,31,
-			0,0,0,0, 0,0,0,0, 0,0,0,0,    1
-			
-	}; // TODO make test
 
 	private void NextLevel(){
 		int i = 0;
@@ -157,12 +148,22 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		NextLevel();
 		
+		FPlayer = new Player("ship/ship.obj");
+		
+		try {
+			FClient = new StateClient();
+		} catch (SocketException | UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void update() {
 		FDeltaTime = Gdx.graphics.getDeltaTime();
 
 		InputHandler.HandleUserInput(cam, FDeltaTime, false);
+		
+		FClient.UpdatePlayer(cam.eye, (byte) 0);
 	}
 	
 	private void RenderPlayer(ByteBuffer Abuffer){
@@ -176,13 +177,11 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		int team = Abuffer.get();
 		
-		Player p = new Player("ship/ship.obj");
-		
 		Gdx.gl11.glPushMatrix();
 		Gdx.gl11.glTranslatef(x, y, z);
 		Gdx.gl11.glScalef(3f,3f,3f);
 		System.out.println(x+":"+y+":"+z);
-		p.drawPlayer();
+		FPlayer.drawPlayer();
 		Gdx.gl11.glPopMatrix();
 	}
 		
@@ -198,8 +197,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		}
 		
 		// Draw State
-		byte[] state = FGameState;
-		ByteBuffer buf = ByteBuffer.wrap(state);
+		ByteBuffer buf = ByteBuffer.wrap(FClient.GetState());
 		if (buf.get()>0){
 			// TODO: render bubble powerup
 		}

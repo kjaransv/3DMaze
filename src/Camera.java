@@ -1,5 +1,8 @@
 import java.nio.ByteBuffer;
 
+import GameObjects.Point3D;
+import GameObjects.Vector3D;
+
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.Gdx;
 

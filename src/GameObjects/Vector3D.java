@@ -1,3 +1,5 @@
+package GameObjects;
+
 public class Vector3D {
 	public float x;
 	public float y;
