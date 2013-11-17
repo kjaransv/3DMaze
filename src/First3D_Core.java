@@ -204,7 +204,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		int players = buf.get();
 		for (int i=0; i<players; i++){
 			RenderPlayer(buf);
-		}		
+		}
 	}
 	
 	private void setFlags()
