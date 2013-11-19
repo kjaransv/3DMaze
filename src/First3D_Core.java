@@ -13,6 +13,7 @@ import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.utils.BufferUtils;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -37,6 +38,8 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	
 	//Model stuff
 	Player FPlayer;
+	private float FVelocity;
+	private boolean FGrounded;
 	
 	private StateClient FClient;
 	
@@ -45,67 +48,74 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	private void NextLevel(){
 		int i = 0;
 		
-		FObjects = new GameObject[40];
+		FObjects = new GameObject[80];
 		
 		// ground
-		FObjects[i++] = new Box(0,0,-30, 			50,1,50, 		0,		"blackbrick.png");
+		FObjects[i++] = new Box(0,-1,-30, 			50,2,50,		"blackbrick.png");
 		
-		FObjects[i++] = new Box(0,0,30, 			50,1,-50, 		0,		"blackbrick.png");
+		FObjects[i++] = new Box(0,-1,30, 			50,2,50,		"blackbrick.png");
 		
 		// edge walls
-		FObjects[i++] = new Box(-15f,10,-10, 		 20,20,10, 		0,		"blackbrick.png"); //left
-		FObjects[i++] = new Box(15f,10,-10, 		-20,20,10, 		0,		"blackbrick.png"); //right
+		FObjects[i++] = new Box(-15f,10,-10, 		 20,20,10, 		"blackbrick.png"); //left
+		FObjects[i++] = new Box(15f,10,-10, 		 20,20,10, 		"blackbrick.png"); //right
 
-		FObjects[i++] = new Box(-15f,10,10, 		 20,20,-10, 	0,		"blackbrick.png"); //left
-		FObjects[i++] = new Box(15f,10,10, 			-20,20,-10, 	0,		"blackbrick.png"); //right
+		FObjects[i++] = new Box(-15f,10,10, 		 20,20,10, 		"blackbrick.png"); //left
+		FObjects[i++] = new Box(15f,10,10, 			 20,20,10, 		"blackbrick.png"); //right
 		
 		// side edge walls
-		FObjects[i++] = new Box(-20f,5,-35, 		 10,10,40, 		0,		"blackbrick.png"); //left
-		FObjects[i++] = new Box(20f,5,-35, 			-10,10,40, 		0,		"blackbrick.png"); //right
+		FObjects[i++] = new Box(-20f,5,-35, 		 10,10,40, 		"blackbrick.png"); //left
+		FObjects[i++] = new Box(20f,5,-35, 			 10,10,40, 		"blackbrick.png"); //right
 		
-		FObjects[i++] = new Box(-20f,5,35, 			 10,10,-40, 	0,		"blackbrick.png"); //left
-		FObjects[i++] = new Box(20f,5,35,			-10,10,-40, 	0,		"blackbrick.png"); //right
+		FObjects[i++] = new Box(-20f,5,35, 			 10,10,40, 		"blackbrick.png"); //left
+		FObjects[i++] = new Box(20f,5,35,			 10,10,40, 		"blackbrick.png"); //right
 		
 		// ramp, ground to side wall
-		FObjects[i++] = new Box2(-12.5f,2.5f,-20, 	 5,5,10, 		0, 		0,0,0, 		"wood.jpg"); //left
-		FObjects[i++] = new Box2(12.5f,2.5f,-20, 	-5,5,10, 		0, 		0,0,0, 		"wood.jpg"); //right
+		FObjects[i++] = new Box(-12.5f,2.5f,-20, 	 5,5,10, 		"wood.jpg"); //left
+		FObjects[i++] = new Box( 12.5f,2.5f,-20, 	 5,5,10, 		"wood.jpg"); //right
 		
-		FObjects[i++] = new Box2(-12.5f,2.25f,20, 	 5,5,-10, 		0,		0,0,0, 		"wood.jpg"); //left
-		FObjects[i++] = new Box2(12.5f,2.25f,20, 	-5,5,-10, 		0, 		0,0,0, 		"wood.jpg"); //right
+		for (int j=1; j<8; j++){
+			float x = j*1.25f;
+			FObjects[i++] = new Stairs(-5.625f-x,x/2,20,	1.25f,x,10,	"wood.jpg"); //left
+			FObjects[i++] = new Stairs( 5.625f+x,x/2,20,	1.25f,x,10,	"wood.jpg"); //right
+		}
 		
 		// ramp, side wall to edge wall
-		FObjects[i++] = new Box2(-20f,11.75f,-17,  	 5,5,5, 		0, 		0,0,0, 		"wood.jpg"); //left
-		FObjects[i++] = new Box2(20f,11.75f,-17, 	-5,5,5, 		0, 		0,0,0, 		"wood.jpg"); //right
+		FObjects[i++] = new Box(-20f,12.5f,-17.5f,	5,5,5, 		"wood.jpg"); //left
+		FObjects[i++] = new Box( 20f,12.5f,-17.5f,	5,5,5, 		"wood.jpg"); //right
 		
-		FObjects[i++] = new Box2(-20f,11.75f,17, 	 5,5,-5, 		0, 		0,0,0, 		"wood.jpg"); //left
-		FObjects[i++] = new Box2(20,11.75f,17, 		-5,5,-5, 		0, 		0,0,0, 		"wood.jpg"); //right
+		FObjects[i++] = new Box(-20f,12.5f,17.5f,	5,5,5, 		"wood.jpg"); //left
+		FObjects[i++] = new Box( 20f,12.5f,17.5f,	5,5,5, 		"wood.jpg"); //right
 		
 		// ramp, side wall to flag wall
-		FObjects[i++] = new Box2(-10,7.5f,-50, 	 	 5,20,5, 		0, 		0,0,0, 		"wood.jpg"); //left
-		FObjects[i++] = new Box2(10,7.5f,-50, 		-5,20,5, 		0, 		0,0,0, 		"wood.jpg"); //right
+		FObjects[i++] = new Box( -7.5f,13.75f,-50,	5,2.5f,10,	"wood.jpg"); //left
+		FObjects[i++] = new Box(-12.5f,11.25f,-50,	5,2.5f,10,	"wood.jpg"); //left
+		FObjects[i++] = new Box(  7.5f,13.75f,-50,	5,2.5f,10,	"wood.jpg"); //right
+		FObjects[i++] = new Box( 12.5f,11.25f,-50,	5,2.5f,10,	"wood.jpg"); //right
 		
-		FObjects[i++] = new Box2(10,7.5f,50, 		-5,20,-5, 		0, 		0,0,0, 		"wood.jpg"); //right
-		FObjects[i++] = new Box2(-10,7.5f,50, 		-5,20,5, 		0, 		0,0,0, 		"wood.jpg"); //left
+		FObjects[i++] = new Box( -7.5f,13.75f,50,	5,2.5f,10,	"wood.jpg"); //left
+		FObjects[i++] = new Box(-12.5f,11.25f,50,	5,2.5f,10,	"wood.jpg"); //left
+		FObjects[i++] = new Box(  7.5f,13.75f,50,	5,2.5f,10,	"wood.jpg"); //right
+		FObjects[i++] = new Box( 12.5f,11.25f,50,	5,2.5f,10,	"wood.jpg"); //right
 		
 		// Flag wall
-		FObjects[i++] = new Box(0,10,-50, 10,20,10, 0,"blackbrick.png");
-		FObjects[i++] = new Box(0,10,50, 10,20,-10, 0,"blackbrick.png");
+		FObjects[i++] = new Box(0,8.75f,-50,	10,17.5f,10,		"blackbrick.png");
+		FObjects[i++] = new Box(0,8.75f, 50,	10,17.5f,10,		"blackbrick.png");
 		
 		//Center bridges
-		FObjects[i++] = new Box2(-5,19.4f,-5, 	10,1,5, 	0, 		0,1,0, "wood.jpg");
-		FObjects[i++] = new Box2(5,19.4f,5, 	5,1,10, 	0, 		0,-1,0, "wood.jpg");
+		FObjects[i++] = new Box2(-5,19.4f,-5, 	10,1,5, 	0, 1,0, "wood.jpg");
+		FObjects[i++] = new Box2( 5,19.4f, 5, 	5,1,10, 	0,-1,0,	"wood.jpg");
 		
-		FObjects[i++] = new Box2(5,19.5f,-5, 	10,1,5, 	0, 		0,-1,0, 	"wood.jpg");
-		FObjects[i++] = new Box2(-5,19.5f,5, 	5,1,10, 	0, 		0,1,0, 	"wood.jpg");
+		FObjects[i++] = new Box2( 5,19.5f,-5, 	10,1,5, 	0,-1,0,	"wood.jpg");
+		FObjects[i++] = new Box2(-5,19.5f, 5, 	5,1,10, 	0, 1,0,	"wood.jpg");
 		
 		//ScullFloor
-		FObjects[i++] = new ScullFloor(0,0,0, 10,1,10, 0, "wood.jpg");
+		FObjects[i++] = new Box(0,-1,0,	10,2,10,	"wood.jpg");
 		
 		//Flags
-		FObjects[i++] = new Flag(0,19,-47.5f,0,0,0,0); //Flag 1
-		FObjects[i++] = new Flag(0,19,47.5f,180,0,1,0); //Flag 2
+		FObjects[i++] = new Flag(0,16.5f,-47.5f,	0,0,0,		0); //Flag 1
+		FObjects[i++] = new Flag(0,16.5f,47.5f,	180,0,1,	0); //Flag 2
 		
-		cam = new Camera(new Point3D(-5.0f, 5.0f, 5.0f), new Point3D(-3.0f, 5.0f, 6.0f), new Vector3D(0.0f, 1.0f, 0.0f));
+		cam = new Camera(new Point3D(0.0f, 15.0f, 30.0f), new Point3D(-3.0f, 5.0f, 6.0f), new Vector3D(0.0f, 1.0f, 0.0f));
 	}
 
 	
@@ -158,10 +168,42 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		}
 	}
 	
+	private boolean CheckCollision(){
+		for (int i=0; i<FObjects.length; i++){
+			if (FObjects[i] != null && FObjects[i].Intersect(cam.eye, 1.8f)) return true;
+		}
+		return false;
+	}
+	
+	private void ApplyGravity(){
+		if(FGrounded && Gdx.input.isKeyPressed(Input.Keys.SPACE)){
+			FVelocity = 9.8f;
+		}
+		FGrounded = false;
+		
+		float a = -19.6f;
+		FVelocity += a*FDeltaTime;
+		cam.eye.y += 0.5f*a*FDeltaTime*FDeltaTime+FVelocity*FDeltaTime;
+	}
+	
 	private void update() {
 		FDeltaTime = Gdx.graphics.getDeltaTime();
 
-		InputHandler.HandleUserInput(cam, FDeltaTime, false);
+		Point3D start = cam.eye.clone();
+		
+		// TODO only apply gravity if there is no Y-collision
+		
+		ApplyGravity();
+		InputHandler.HandleUserInput(cam, FDeltaTime, true);
+	
+		if (CheckCollision()) {
+			cam.eye.x = start.x;
+			cam.eye.y = start.y;
+			cam.eye.z = start.z;
+			
+			FVelocity = 0;
+			FGrounded = true;
+		}
 		
 		FClient.UpdatePlayer(cam.eye, (byte) 1); // TODO missing team variable
 	}
@@ -180,7 +222,7 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		Gdx.gl11.glPushMatrix();
 		Gdx.gl11.glTranslatef(x, y, z);
 		Gdx.gl11.glScalef(3f,3f,3f);
-		FPlayer.drawPlayer();
+		//FPlayer.drawPlayer(); // TODO enable
 		Gdx.gl11.glPopMatrix();
 	}
 		
@@ -189,7 +231,6 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		cam.setModelViewMatrix();
 		
 		// Draw objects!
-		// limit view to area around the player 8X8X8
 		for (int i=0; i<FObjects.length; i++){
 			if (FObjects[i] != null)
 				FObjects[i].Render();
@@ -201,7 +242,6 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 			// TODO: render bubble powerup
 		}
 		int players = buf.get();
-		//System.out.println(players);
 		for (int i=0; i<players; i++){
 			RenderPlayer(buf);
 		}
@@ -251,7 +291,6 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	@Override
 	public boolean keyTyped(char arg0) {
 		if (arg0==27) {
-			System.out.println(cam);
 			Gdx.app.exit();
 		}
 		return false;

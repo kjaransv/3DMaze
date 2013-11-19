@@ -7,79 +7,20 @@ import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.BufferUtils;
 
-public class Box2 extends GameObject{
-	private static FloatBuffer FVertexBuffer = CreateBuffer();
-
-	private float FX, FY, FZ;
-	private float FSizeX, FSizeY, FSizeZ;
-	
-	private int FColor;
-	
+public class Box2 extends Box{
 	private int FRotateX, FRotateY, FRotateZ;
-	
-	FloatBuffer texCoordBuffer;
-	Texture tex;
-	
-	
-	public static FloatBuffer CreateBuffer(){
-		FloatBuffer VertexBuffer = BufferUtils.newFloatBuffer(72);
-		VertexBuffer.put(new float[] {-0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
-									  0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f,
-									  0.5f, -0.5f, -0.5f, 0.5f, 0.5f, -0.5f,
-									  0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f,
-									  0.5f, -0.5f, 0.5f, 0.5f, 0.5f, 0.5f,
-									  -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f,
-									  -0.5f, -0.5f, 0.5f, -0.5f, 0.5f, 0.5f,
-									  -0.5f, -0.5f, -0.5f, -0.5f, 0.5f, -0.5f,
-									  -0.5f, 0.5f, -0.5f, -0.5f, 0.5f, 0.5f,
-									  0.5f, 0.5f, -0.5f, 0.5f, 0.5f, 0.5f,
-									  -0.5f, -0.5f, -0.5f, -0.5f, -0.5f, 0.5f,
-									  0.5f, -0.5f, -0.5f, 0.5f, -0.5f, 0.5f});
 
-		VertexBuffer.rewind();
-		
-		return VertexBuffer;
-	}
-	
-	public Box2(float AX, float AY, float AZ, float ASizeX, float ASizeY, float ASizeZ, int color, int rotateX, int rotateY, int rotateZ, String textureImage){
-		FColor = color;
-		
-		FX = -AX;
-		FY = AY;
-		FZ = AZ;
-		
-		FSizeX = ASizeX;
-		FSizeY = ASizeY;
-		FSizeZ = ASizeZ;
+	public Box2(float AX, float AY, float AZ, float ASizeX, float ASizeY, float ASizeZ, int rotateX, int rotateY, int rotateZ, String textureImage){
+		super(AX, AY, AZ, ASizeX, ASizeY, ASizeZ, textureImage);
 		
 		FRotateX = rotateX;
 		FRotateY = rotateY;
 		FRotateZ = rotateZ;
-		
-		texCoordBuffer = BufferUtils.newFloatBuffer(48);
-        texCoordBuffer.put(new float[] {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                                                                        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                                                                        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                                                                        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                                                                        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                                                                        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f});
-        texCoordBuffer.rewind();
-        
-        tex = new Texture(Gdx.files.internal("assets/textures/" + textureImage));
-
 	}
 	
 	@Override
 	public void Render() {
 		Gdx.gl11.glPushMatrix();
-		
-		switch (FColor){
-		case 0: Gdx.gl11.glColor4f(1, 1, 1, 1); break;
-		case 1: Gdx.gl11.glColor4f(1,1,1,1); break;
-		case 2: Gdx.gl11.glColor4f(1,1,1,1); break;
-		case 3: Gdx.gl11.glColor4f(1,1,1,1); break;
-		
-		}
 		
 		Gdx.gl11.glTranslatef(FX, FY, FZ);
 		Gdx.gl11.glRotatef(45, FRotateX, FRotateY, FRotateZ);

@@ -26,7 +26,6 @@ public class StateServer{
 				DatagramPacket packet = FUdp.Receive(_data);
 				if (packet != null /*&& !packet.getAddress().equals(FHost)*/){
 					String s = packet.getAddress().getHostName();
-					//System.out.println(s);
 					Integer i = FConnections.get(s);
 					if (i == null){
 						i = FConnections.size();
@@ -56,7 +55,7 @@ public class StateServer{
 				while (!interrupted()){
 					FUdp.Send(FState);
 	
-					sleep(500);
+					sleep(200);
 				}
 			} catch (InterruptedException e) {
 			}

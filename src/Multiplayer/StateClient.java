@@ -41,7 +41,7 @@ public class StateClient{
 				while (!interrupted()){
 					FUdp.Send(FPlayer);
 	
-					sleep(500);
+					sleep(100);
 				}
 			} catch (InterruptedException e) {
 			}

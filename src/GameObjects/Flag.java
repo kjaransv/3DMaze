@@ -28,7 +28,6 @@ public class Flag extends GameObject{
         tex = new Texture(Gdx.files.internal("assets/textures/wood.jpg"));
 	}
 	
-	
 	public void Render()
 	{
 		Gdx.gl11.glPushMatrix();
@@ -50,6 +49,12 @@ public class Flag extends GameObject{
 		Gdx.gl11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         
 		Gdx.gl11.glPopMatrix();
+	}
+
+	@Override
+	public boolean Intersect(Point3D ALocation, float ARadius) {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

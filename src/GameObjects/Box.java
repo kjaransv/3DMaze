@@ -8,15 +8,13 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.utils.BufferUtils;
 
 public class Box extends GameObject{
-	private static FloatBuffer FVertexBuffer = CreateBuffer();
+	protected static FloatBuffer FVertexBuffer = CreateBuffer();
 
-	private float FX, FY, FZ;
-	private float FSizeX, FSizeY, FSizeZ;
+	protected float FX, FY, FZ;
+	protected float FSizeX, FSizeY, FSizeZ;
 	
-	private int FColor;
-	
-	FloatBuffer texCoordBuffer;
-	Texture tex;
+	protected FloatBuffer texCoordBuffer;
+	protected Texture tex;
 	
 	public static FloatBuffer CreateBuffer(){
 		FloatBuffer VertexBuffer = BufferUtils.newFloatBuffer(72);
@@ -38,9 +36,7 @@ public class Box extends GameObject{
 		return VertexBuffer;
 	}
 	
-	public Box(float AX, float AY, float AZ, float ASizeX, float ASizeY, float ASizeZ, int color,String textureImage){
-		FColor = color;
-		
+	public Box(float AX, float AY, float AZ, float ASizeX, float ASizeY, float ASizeZ, String textureImage){
 		FX = -AX;
 		FY = AY;
 		FZ = AZ;
@@ -62,15 +58,16 @@ public class Box extends GameObject{
 	}
 	
 	@Override
+	public boolean Intersect(Point3D ALocation, float ARadius){
+		return
+				FX-FSizeX/2 < ALocation.x+ARadius && FX+FSizeX/2 > ALocation.x-ARadius &&
+				FY-FSizeY/2 < ALocation.y+ARadius && FY+FSizeY/2 > ALocation.y-ARadius &&
+				FZ-FSizeZ/2 < ALocation.z+ARadius && FZ+FSizeZ/2 > ALocation.z-ARadius;
+	}
+	
+	@Override
 	public void Render() {
 		Gdx.gl11.glPushMatrix();
-		
-		switch (FColor){
-		case 0: Gdx.gl11.glColor4f(1,1,1,1); break;
-		case 1: Gdx.gl11.glColor4f(1, 0, 0, 1); break;
-		case 2: Gdx.gl11.glColor4f(0, 1, 0, 1); break;
-		case 3: Gdx.gl11.glColor4f(0, 0, 1, 1); break;
-		}
 		
 		Gdx.gl11.glTranslatef(FX, FY, FZ);
 		Gdx.gl11.glScalef(FSizeX, FSizeY, FSizeZ);
