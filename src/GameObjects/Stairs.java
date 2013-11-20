@@ -7,14 +7,12 @@ public class Stairs extends Box{
 	}
 
 	@Override
-	public boolean Intersect(Point3D ALocation, float ARadius){
-		boolean result = super.Intersect(ALocation, ARadius);
+	public Direction Intersect(Point3D AStart, Point3D AEnd, float ARadius){
+		Direction result = super.Intersect(AStart, AEnd, ARadius);
 		
-		if (result){
-			if (ALocation.y+ARadius+1.25f>=FY+FSizeY/2){
-				//ALocation.y += 0.25f;
-				return true;
-			}
+		if (result == Direction.dirX_P || result == Direction.dirZ_P ||
+			result == Direction.dirX_N || result == Direction.dirZ_N){
+			return Direction.dirY_P;
 		}
 		return result;
 	}

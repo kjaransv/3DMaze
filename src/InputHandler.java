@@ -5,7 +5,7 @@ public class InputHandler {
 	private static final int FSpeed = 10;
 	
 	public static void HandleUserInput(Camera ACam, float ADeltaTime, boolean ACanMove){
-		float y = ACam.eye.y;
+		//float y = ACam.eye.y;
 		
 		ACam.yaw(Gdx.input.getX()-Gdx.graphics.getWidth()/2);
 		ACam.pitch(Gdx.graphics.getHeight()/2-Gdx.input.getY());
@@ -40,6 +40,6 @@ public class InputHandler {
 				ACam.slide(FSpeed * ADeltaTime, 0.0f, 0.0f);
 		}
 		
-		ACam.eye.y = y;
+		//ACam.eye.y = y;
 	}
 }

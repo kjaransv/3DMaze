@@ -12,15 +12,6 @@ public class DesktopStarter
 {
 	public static void main(String[] args)
 	{
-		if (true){
-			try {
-				new StateServer();
-			} catch (SocketException | UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
         // Getting the current desktop screen resolution.
         Toolkit toolkit = Toolkit.getDefaultToolkit();
         Dimension scrnsize = toolkit.getScreenSize();
@@ -39,6 +30,6 @@ public class DesktopStarter
         // Enable vSync
         cfg.vSyncEnabled = true;
 
-        new LwjglApplication(new First3D_Core(), cfg);
+        new LwjglApplication(new First3D_Core(true), cfg);
 	}
 }

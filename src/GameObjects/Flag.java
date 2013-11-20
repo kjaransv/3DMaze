@@ -10,13 +10,12 @@ public class Flag extends GameObject{
 	
 	StillModel Fmodel;
 	Texture tex;
-	private float Fx,Fy,Fz,Fangle, FrotateX,FrotateY,FrotateZ;
+	private float Fangle, FrotateX,FrotateY,FrotateZ;
 	
 	public Flag(float AX, float AY, float AZ, int Aangle, int ArotateX, int ArotateY, int ArotateZ)
 	{
-		Fx = AX;
-		Fy = AY;
-		Fz = AZ;
+		super(AX, AY, AZ, 0, 0, 0); // TODO what size is it?
+
 		Fangle = Aangle;
 		FrotateX = ArotateX;
 		FrotateY = ArotateY;
@@ -32,7 +31,7 @@ public class Flag extends GameObject{
 	{
 		Gdx.gl11.glPushMatrix();
 		
-		Gdx.gl11.glTranslatef(Fx, Fy, Fz);
+		Gdx.gl11.glTranslatef(FX, FY, FZ);
 		Gdx.gl11.glScalef(0.4f,0.4f,0.4f);
 		Gdx.gl11.glRotatef(Fangle, FrotateX, FrotateY, FrotateZ);
 		
@@ -52,9 +51,9 @@ public class Flag extends GameObject{
 	}
 
 	@Override
-	public boolean Intersect(Point3D ALocation, float ARadius) {
+	public Direction Intersect(Point3D AStart, Point3D AEnd, float ARadius) {
 		// TODO Auto-generated method stub
-		return false;
+		return Direction.dirNone;
 	}
 
 }

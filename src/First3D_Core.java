@@ -7,6 +7,7 @@ import org.omg.CORBA.Environment;
 
 import GameObjects.*;
 import Multiplayer.StateClient;
+import Multiplayer.StateServer;
 
 import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.GL11;
@@ -21,9 +22,6 @@ import com.badlogic.gdx.graphics.g3d.loaders.ModelLoader;
 import com.badlogic.gdx.graphics.g3d.loaders.wavefront.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.model.Model;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
-
-
-
 
 public class First3D_Core implements ApplicationListener, InputProcessor
 {
@@ -42,18 +40,20 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	private boolean FGrounded;
 	
 	private StateClient FClient;
+	private boolean FHost;
+	private StateServer FServer;
 	
 	private GameObject FObjects[];
 
 	private void NextLevel(){
 		int i = 0;
 		
-		FObjects = new GameObject[80];
+		FObjects = new GameObject[65];
 		
 		// ground
-		FObjects[i++] = new Box(0,-1,-30, 			50,2,50,		"blackbrick.png");
+		FObjects[i++] = new Box(0,-1,-30, 			49.5f,2,49.5f,		"blackbrick.png");
 		
-		FObjects[i++] = new Box(0,-1,30, 			50,2,50,		"blackbrick.png");
+		FObjects[i++] = new Box(0,-1,30, 			49.5f,2,49.5f,		"blackbrick.png");
 		
 		// edge walls
 		FObjects[i++] = new Box(-15f,10,-10, 		 20,20,10, 		"blackbrick.png"); //left
@@ -73,11 +73,19 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		FObjects[i++] = new Box(-12.5f,2.5f,-20, 	 5,5,10, 		"wood.jpg"); //left
 		FObjects[i++] = new Box( 12.5f,2.5f,-20, 	 5,5,10, 		"wood.jpg"); //right
 		
-		for (int j=1; j<8; j++){
+		for (int j=1; j<9; j++){
 			float x = j*1.25f;
-			FObjects[i++] = new Stairs(-5.625f-x,x/2,20,	1.25f,x,10,	"wood.jpg"); //left
-			FObjects[i++] = new Stairs( 5.625f+x,x/2,20,	1.25f,x,10,	"wood.jpg"); //right
+			FObjects[i++] = new Stairs(-4.375f-x,x/2,20,	1.25f,x,10,	"wood.jpg"); //left
+			FObjects[i++] = new Stairs( 4.375f+x,x/2,20,	1.25f,x,10,	"wood.jpg"); //right
+			
+			FObjects[i++] = new Stairs(-4.375f-x,x/2,-20,	1.25f,x,10,	"wood.jpg"); //left
+			FObjects[i++] = new Stairs( 4.375f+x,x/2,-20,	1.25f,x,10,	"wood.jpg"); //right
 		}
+		FObjects[i++] = new Box(-10f,5,26.25f,	10,10,2.5f,	"blackbrick.png"); //left
+		FObjects[i++] = new Box( 10f,5,26.25f,	10,10,2.5f,	"blackbrick.png"); //left
+		
+		FObjects[i++] = new Box(-10f,5,-26.25f,	10,10,2.5f,	"blackbrick.png"); //left
+		FObjects[i++] = new Box( 10f,5,-26.25f,	10,10,2.5f,	"blackbrick.png"); //left
 		
 		// ramp, side wall to edge wall
 		FObjects[i++] = new Box(-20f,12.5f,-17.5f,	5,5,5, 		"wood.jpg"); //left
@@ -101,13 +109,6 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		FObjects[i++] = new Box(0,8.75f,-50,	10,17.5f,10,		"blackbrick.png");
 		FObjects[i++] = new Box(0,8.75f, 50,	10,17.5f,10,		"blackbrick.png");
 		
-		//Center bridges
-		FObjects[i++] = new Box2(-5,19.4f,-5, 	10,1,5, 	0, 1,0, "wood.jpg");
-		FObjects[i++] = new Box2( 5,19.4f, 5, 	5,1,10, 	0,-1,0,	"wood.jpg");
-		
-		FObjects[i++] = new Box2( 5,19.5f,-5, 	10,1,5, 	0,-1,0,	"wood.jpg");
-		FObjects[i++] = new Box2(-5,19.5f, 5, 	5,1,10, 	0, 1,0,	"wood.jpg");
-		
 		//ScullFloor
 		FObjects[i++] = new Box(0,-1,0,	10,2,10,	"wood.jpg");
 		
@@ -118,14 +119,14 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		cam = new Camera(new Point3D(0.0f, 15.0f, 30.0f), new Point3D(-3.0f, 5.0f, 6.0f), new Vector3D(0.0f, 1.0f, 0.0f));
 	}
 
+	public First3D_Core(boolean AHost){
+		FHost = AHost;
+	}
 	
 	@Override
 	public void create() {
-
 		Gdx.input.setInputProcessor(this);
-		
-
-		
+	
 		Gdx.gl11.glEnable(GL11.GL_DEPTH_TEST);
 		
 		Gdx.gl11.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -160,6 +161,15 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		FPlayer = new Player("ship/ship.obj");
 		
+		if (FHost){
+			try {
+				FServer = new StateServer();
+			} catch (SocketException | UnknownHostException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		try {
 			FClient = new StateClient();
 		} catch (SocketException | UnknownHostException e) {
@@ -168,11 +178,34 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		}
 	}
 	
-	private boolean CheckCollision(){
+	private void CheckCollision(Point3D AStart, Point3D AEnd){
+		// you can only collide with one, x-axis, y-axis or z-axis
+		// and if so then it should be changed to that value
+		
+		float r = 2;//1.8f;
 		for (int i=0; i<FObjects.length; i++){
-			if (FObjects[i] != null && FObjects[i].Intersect(cam.eye, 1.8f)) return true;
+			if (FObjects[i] != null){
+				switch(FObjects[i].Intersect(AStart, AEnd, r)){
+					case dirX_N: AEnd.x = FObjects[i].FX-FObjects[i].FSizeX2-r; break;
+					case dirX_P: AEnd.x = FObjects[i].FX+FObjects[i].FSizeX2+r; break;
+				
+					case dirY_N: {
+						AEnd.y = FObjects[i].FY-FObjects[i].FSizeY2-r;
+						FVelocity = 0;
+						break;
+					}
+					case dirY_P: {
+						AEnd.y = FObjects[i].FY+FObjects[i].FSizeY2+r;
+						FVelocity = 0;
+						FGrounded = true;
+						break;	
+					}
+				
+					case dirZ_N: AEnd.z = FObjects[i].FZ-FObjects[i].FSizeZ2-r; break;
+					case dirZ_P: AEnd.z = FObjects[i].FZ+FObjects[i].FSizeZ2+r; break;
+				}
+			}
 		}
-		return false;
 	}
 	
 	private void ApplyGravity(){
@@ -188,22 +221,12 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	
 	private void update() {
 		FDeltaTime = Gdx.graphics.getDeltaTime();
-
+		
 		Point3D start = cam.eye.clone();
-		
-		// TODO only apply gravity if there is no Y-collision
-		
 		ApplyGravity();
 		InputHandler.HandleUserInput(cam, FDeltaTime, true);
 	
-		if (CheckCollision()) {
-			cam.eye.x = start.x;
-			cam.eye.y = start.y;
-			cam.eye.z = start.z;
-			
-			FVelocity = 0;
-			FGrounded = true;
-		}
+		CheckCollision(start, cam.eye);
 		
 		FClient.UpdatePlayer(cam.eye, (byte) 1); // TODO missing team variable
 	}
@@ -291,6 +314,9 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	@Override
 	public boolean keyTyped(char arg0) {
 		if (arg0==27) {
+			if (FServer != null) FServer.Stop();
+			if (FClient != null) FClient.Stop();
+			
 			Gdx.app.exit();
 		}
 		return false;
