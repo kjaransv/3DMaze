@@ -1,5 +1,3 @@
-import java.net.SocketException;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import GameLogic.TPlayer;
@@ -17,7 +15,6 @@ import com.badlogic.gdx.InputProcessor;
 public class First3D_Core implements ApplicationListener, InputProcessor
 {
 	private StateClient FClient;
-	private boolean FHost;
 	private StateServer FServer;
 	
 	private GameObject FObjects[];
@@ -26,8 +23,9 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 	
 	private TPlayer FPlayer;
 	
-	public First3D_Core(boolean AHost, byte ATeam){
-		FHost = AHost;
+	public First3D_Core(StateServer AServer, StateClient AClient, byte ATeam){
+		FServer = AServer;
+		FClient = AClient;
 		FPlayer = new TPlayer(ATeam, new Point3D(0,50,30-60*ATeam));
 	}
 	
@@ -49,22 +47,6 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		FTeam0 = new Player(TTextures.Team0);
 		FTeam1 = new Player(TTextures.Team1);
-		
-		if (FHost){
-			try {
-				FServer = new StateServer();
-			} catch (SocketException | UnknownHostException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-		}
-		
-		try {
-			FClient = new StateClient();
-		} catch (SocketException | UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
 		
 		FObjects = Map.GenerateMap();
 	}

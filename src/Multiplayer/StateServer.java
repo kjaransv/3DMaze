@@ -1,7 +1,6 @@
 package Multiplayer;
 
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.HashMap;
@@ -11,13 +10,11 @@ public class StateServer{
 		private static final int MAX_PLAYERS = 40;
 		
 		private UDPReceive FUdp;
-		private InetAddress FHost;
 		
 		private HashMap<String, Integer> FConnections = new HashMap<String, Integer>();
 		
 		public Listen() throws SocketException, UnknownHostException{
 			FUdp = new UDPReceive(UDPConstants.FBroadcast, UDPConstants.FPort+1);
-			FHost = InetAddress.getLocalHost();
 		}
 		
 		public void run(){

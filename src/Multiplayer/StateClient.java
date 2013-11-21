@@ -1,29 +1,25 @@
 package Multiplayer;
 
 import java.net.DatagramPacket;
-import java.net.InetAddress;
 import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
 import GameLogic.TPlayer;
-import Graphic.Point3D;
 
 public class StateClient{
 	class Listen extends Thread{		
 		private UDPReceive FUdp;
-		private InetAddress FHost;
 		
 		public Listen() throws SocketException, UnknownHostException{
 			FUdp = new UDPReceive(UDPConstants.FBroadcast, UDPConstants.FPort);
-			FHost = InetAddress.getLocalHost();
 		}
 		
 		public void run(){
 			while (!interrupted()){
 				byte[] _data = new byte[1024];
 				DatagramPacket packet = FUdp.Receive(_data);
-				if (packet != null /*&& !packet.getAddress().equals(FHost)*/){
+				if (packet != null){
 					FState = _data;
 				}
 			}

@@ -1,5 +1,10 @@
 import java.awt.Dimension;
 import java.awt.Toolkit;
+import java.net.SocketException;
+import java.net.UnknownHostException;
+
+import Multiplayer.StateClient;
+import Multiplayer.StateServer;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -28,7 +33,26 @@ public class DesktopStarter
         
         boolean host = true;
         byte team = 0;
+        
+        // create server
+        StateServer server = null;
+		if (host){
+			try {
+				server = new StateServer();
+			} catch (SocketException | UnknownHostException e) {
+				e.printStackTrace();
+			}
+		}
 
-        new LwjglApplication(new First3D_Core(host, team), cfg);
+        // create client
+		StateClient client = null;
+		try {
+			client = new StateClient();
+		} catch (SocketException | UnknownHostException e) {
+			e.printStackTrace();
+			if (server != null) server.Stop();
+		}
+        
+        new LwjglApplication(new First3D_Core(server, client, team), cfg);
 	}
 }
