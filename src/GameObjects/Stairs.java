@@ -1,9 +1,16 @@
 package GameObjects;
 
+import com.badlogic.gdx.graphics.Texture;
+
+import Graphic.Point3D;
+
 public class Stairs extends Box{
 
-	public Stairs(float AX, float AY, float AZ, float ASizeX, float ASizeY, float ASizeZ, String textureImage) {
-		super(AX, AY, AZ, ASizeX, ASizeY, ASizeZ, textureImage);
+	public Stairs(	float AX, float AY, float AZ,
+					float ASizeX, float ASizeY, float ASizeZ,
+					Texture ATexture
+	) {
+		super(AX, AY, AZ, ASizeX, ASizeY, ASizeZ, ATexture);
 	}
 
 	@Override

@@ -1,5 +1,7 @@
 package GameObjects;
 
+import Graphic.Point3D;
+
 public abstract class GameObject {
 	public enum Direction{
 		dirNone, dirX_P, dirY_P, dirZ_P, dirX_N, dirY_N, dirZ_N

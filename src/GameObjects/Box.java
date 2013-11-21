@@ -2,6 +2,9 @@ package GameObjects;
 
 import java.nio.FloatBuffer;
 
+import Graphic.Point3D;
+import Graphic.TTextures;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.Texture;
@@ -10,8 +13,7 @@ import com.badlogic.gdx.utils.BufferUtils;
 public class Box extends GameObject{
 	protected static FloatBuffer FVertexBuffer = CreateBuffer();
 	
-	protected FloatBuffer texCoordBuffer;
-	protected Texture tex;
+	protected Texture FTexture;
 	
 	public static FloatBuffer CreateBuffer(){
 		FloatBuffer VertexBuffer = BufferUtils.newFloatBuffer(72);
@@ -33,19 +35,13 @@ public class Box extends GameObject{
 		return VertexBuffer;
 	}
 	
-	public Box(float AX, float AY, float AZ, float ASizeX, float ASizeY, float ASizeZ, String textureImage){
+	public Box(	float AX, float AY, float AZ,
+				float ASizeX, float ASizeY, float ASizeZ,
+				Texture ATexture
+	){
 		super(AX, AY, AZ, ASizeX, ASizeY, ASizeZ);
-		
-		texCoordBuffer = BufferUtils.newFloatBuffer(48);
-        texCoordBuffer.put(new float[] {0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                                                                        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                                                                        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                                                                        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                                                                        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f,
-                                                                        0.0f, 1.0f, 0.0f, 0.0f, 1.0f, 1.0f, 1.0f, 0.0f});
-        texCoordBuffer.rewind();
         
-        tex = new Texture(Gdx.files.internal("assets/textures/" + textureImage));
+        FTexture = ATexture;
 	}
 	
 	public int abc(float APoint_a, float APoint_b, float ARect_a, float ARect_b, float ASize_a, float ASize_b){
@@ -126,9 +122,9 @@ public class Box extends GameObject{
         Gdx.gl11.glEnable(GL11.GL_TEXTURE_2D);
         Gdx.gl11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
         
-        tex.bind();
+        FTexture.bind();
 
-        Gdx.gl11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, texCoordBuffer);
+        Gdx.gl11.glTexCoordPointer(2, GL11.GL_FLOAT, 0, TTextures.FTexCoordBuffer);
         //Texture related END
 		
 		Gdx.gl11.glNormal3f(0.0f, 0.0f, -1.0f);

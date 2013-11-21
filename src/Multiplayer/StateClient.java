@@ -6,7 +6,8 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 
-import GameObjects.Point3D;
+import GameLogic.TPlayer;
+import Graphic.Point3D;
 
 public class StateClient{
 	class Listen extends Thread{		
@@ -66,17 +67,17 @@ public class StateClient{
 		FOut.interrupt();
 	}
 
-	public void UpdatePlayer(Point3D APlayer, byte ATeam){
+	public void UpdatePlayer(TPlayer APlayer){
 		ByteBuffer buf = ByteBuffer.allocate(25);
-		buf.putFloat(APlayer.x);
-		buf.putFloat(APlayer.y);
-		buf.putFloat(APlayer.z);
+		buf.putFloat(APlayer.FCam.eye.x);
+		buf.putFloat(APlayer.FCam.eye.y);
+		buf.putFloat(APlayer.FCam.eye.z);
 		
 		buf.putFloat(0); // TODO: find direction
 		buf.putFloat(0);
 		buf.putFloat(0);
 		
-		buf.put(ATeam);
+		buf.put(APlayer.FTeam);
 		
 		FPlayer = buf.array();
 	}

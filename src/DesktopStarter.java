@@ -1,9 +1,5 @@
 import java.awt.Dimension;
 import java.awt.Toolkit;
-import java.net.SocketException;
-import java.net.UnknownHostException;
-
-import Multiplayer.StateServer;
 
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
@@ -29,7 +25,10 @@ public class DesktopStarter
         
         // Enable vSync
         cfg.vSyncEnabled = true;
+        
+        boolean host = true;
+        byte team = 0;
 
-        new LwjglApplication(new First3D_Core(true), cfg);
+        new LwjglApplication(new First3D_Core(host, team), cfg);
 	}
 }

@@ -2,21 +2,15 @@ package GameObjects;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL11;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g3d.loaders.wavefront.ObjLoader;
 import com.badlogic.gdx.graphics.g3d.model.still.StillModel;
 
 public class Player {
 	
-	StillModel Fmodel;
-	Texture tex;
+	StillModel FModel;
 	
-	public Player(String modelName)
+	public Player(StillModel AModel)
 	{
-		ObjLoader loader = new ObjLoader();
-        Fmodel = loader.loadObj(Gdx.files.internal("assets/data/" + modelName), true);
-        
-        tex = new Texture(Gdx.files.internal("assets/textures/wood.jpg"));
+        FModel = AModel;
 	}
 	
 	public void drawPlayer()
@@ -25,10 +19,8 @@ public class Player {
         
         Gdx.gl11.glEnable(GL11.GL_TEXTURE_2D);
         Gdx.gl11.glEnableClientState(GL11.GL_TEXTURE_COORD_ARRAY);
-        
-        tex.bind();
 
-        Fmodel.render();
+        FModel.render();
         
 		Gdx.gl11.glDisable(GL11.GL_TEXTURE_2D);
 		Gdx.gl11.glDisableClientState(GL11.GL_TEXTURE_COORD_ARRAY);

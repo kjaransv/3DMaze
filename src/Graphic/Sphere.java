@@ -1,12 +1,9 @@
+package Graphic;
 
-import java.io.InputStream;
 import java.nio.FloatBuffer;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.GL11;
-import com.badlogic.gdx.graphics.Mesh;
-import com.badlogic.gdx.graphics.g3d.loaders.wavefront.ObjLoader;
 import com.badlogic.gdx.utils.BufferUtils;
 
 public class Sphere
@@ -17,9 +14,6 @@ public class Sphere
         private FloatBuffer normalBuffer;
         private int vertexCount;
         private boolean drawLines = false;
-        
-
-
         
         public Sphere(int i_stacks, int i_slices) {
         	

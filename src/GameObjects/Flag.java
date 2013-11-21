@@ -1,5 +1,7 @@
 package GameObjects;
 
+import Graphic.Point3D;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.graphics.Texture;

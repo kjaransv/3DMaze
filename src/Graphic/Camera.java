@@ -1,14 +1,12 @@
+package Graphic;
 import java.nio.ByteBuffer;
-
-import GameObjects.Point3D;
-import GameObjects.Vector3D;
 
 import com.badlogic.gdx.graphics.GL11;
 import com.badlogic.gdx.Gdx;
 
 public class Camera
 {
-	Point3D eye;
+	public Point3D eye;
 	Vector3D u;
 	Vector3D v;
 	Vector3D n;
