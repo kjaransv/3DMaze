@@ -17,6 +17,7 @@ public class TTextures {
 	public static Texture Wall_Wood;
 	public static Texture Wall_Stone;
 	
+	public static StillModel T_Rex;
 	
 	public static void LoadTextures(){
 		FTexCoordBuffer = BufferUtils.newFloatBuffer(48);
@@ -29,10 +30,12 @@ public class TTextures {
 		FTexCoordBuffer.rewind();
 		
 		ObjLoader loader = new ObjLoader();
-		Team0 = loader.loadObj(Gdx.files.internal("assets/data/ship/ship.obj"), true);
-		Team1 = loader.loadObj(Gdx.files.internal("assets/data/ship/ship.obj"), true);
+		Team0 = loader.loadObj(Gdx.files.internal("data/ship/ship.obj"), true);
+		Team1 = loader.loadObj(Gdx.files.internal("data/ship/ship.obj"), true);
 		
-		Wall_Wood = new Texture(Gdx.files.internal("assets/textures/wood.jpg"));
-		Wall_Stone = new Texture(Gdx.files.internal("assets/textures/blackbrick.png"));
+		Wall_Wood = new Texture(Gdx.files.internal("textures/wood.jpg"));
+		Wall_Stone = new Texture(Gdx.files.internal("textures/blackbrick.png"));
+		
+		T_Rex = loader.loadObj(Gdx.files.internal("data/trex/trex.obj"), true);
 	}
 }

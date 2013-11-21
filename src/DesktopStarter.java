@@ -31,8 +31,8 @@ public class DesktopStarter
         // Enable vSync
         cfg.vSyncEnabled = true;
         
-        boolean host = true;
-        byte team = 0;
+        boolean host = args.length == 2 && args[1].equals("h");
+        byte team = (byte)((args.length == 0) ? 0 : Byte.parseByte(args[0]));
         
         // create server
         StateServer server = null;

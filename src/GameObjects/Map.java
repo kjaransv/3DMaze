@@ -6,7 +6,7 @@ public class Map {
 	public static GameObject[] GenerateMap(){
 		int i = 0;
 		
-		GameObject[] result = new GameObject[65];
+		GameObject[] result = new GameObject[67];
 		
 		// ground
 		result[i++] = new Box(0,-1,-30,	49.5f,2,49.5f,	TTextures.Wall_Stone);
@@ -73,6 +73,9 @@ public class Map {
 		//Flags
 		result[i++] = new Flag(0,16.5f,-47.5f,	0,0,0,		0); //Flag 1
 		result[i++] = new Flag(0,16.5f,47.5f,	180,0,1,	0); //Flag 2
+		
+		result[i++] = new Box(0,20,30,	2,2,2,	TTextures.Wall_Wood);
+		result[i++] = new Box(0,20,-30,	2,2,2,	TTextures.Wall_Stone);
 		
 		return result;
 	}

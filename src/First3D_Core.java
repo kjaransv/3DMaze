@@ -68,12 +68,15 @@ public class First3D_Core implements ApplicationListener, InputProcessor
 		
 		byte team = Abuffer.get();
 		
-		Gdx.gl11.glPushMatrix();
-		Gdx.gl11.glTranslatef(x, y, z);
-		Gdx.gl11.glScalef(3f,3f,3f);
-		if (team == 0) FTeam0.drawPlayer();
-		else FTeam1.drawPlayer();
-		Gdx.gl11.glPopMatrix();
+		// TODO remove
+		if (FPlayer.FTeam != team){
+			Gdx.gl11.glPushMatrix();
+			Gdx.gl11.glTranslatef(x, y, z);
+			Gdx.gl11.glScalef(3f,3f,3f);
+			if (team == 0) FTeam0.drawPlayer();
+			else FTeam1.drawPlayer();
+			Gdx.gl11.glPopMatrix();
+		}
 	}
 		
 	private void display() {
